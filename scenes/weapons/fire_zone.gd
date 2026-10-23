@@ -49,4 +49,4 @@ func _physics_process(delta: float) -> void:
 		_tick_left = TICK
 		var hit_damage := weapon.damage()
 		for enemy in weapon.enemies.in_radius(position, radius):
-			weapon.enemies.damage(enemy, hit_damage)
+			weapon.enemies.damage(enemy, hit_damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_WEAPON, weapon.player)

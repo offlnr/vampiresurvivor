@@ -128,6 +128,10 @@ func set_buffs(buffs: Dictionary) -> void:
 		(_shown_buffs[kind].get_child(1) as Label).text = str(ceili(buffs[kind]))
 
 
+func show_message(text: String, color: Color, hold: float) -> void:
+	_show_banner(text, color, hold)
+
+
 func show_horde_started(title: String) -> void:
 	_show_banner(title + "!", Palette.ORANGE, 1.4)
 

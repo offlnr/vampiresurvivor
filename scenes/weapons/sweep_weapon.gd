@@ -33,7 +33,7 @@ func _attack() -> bool:
 		for enemy in enemies.in_radius(player.global_position, radius):
 			var to_enemy := enemy.position - player.global_position
 			if absf(direction.angle_to(to_enemy)) <= HALF_ARC or to_enemy.length() < 26.0:
-				enemies.damage(enemy, hit_damage, to_enemy, 220.0)
+				enemies.damage(enemy, hit_damage, to_enemy, 220.0, EnemyManager.SOURCE_WEAPON, player)
 		_show_slash(_slashes[i], direction, radius)
 	Audio.play(&"slash", 0.1, -4.0)
 	return true

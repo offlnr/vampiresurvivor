@@ -51,4 +51,4 @@ func _physics_process(delta: float) -> void:
 		if _time - _last_hit.get(key, -INF) < HIT_INTERVAL:
 			continue
 		_last_hit[key] = _time
-		weapon.enemies.damage(enemy, hit_damage, velocity, 120.0)
+		weapon.enemies.damage(enemy, hit_damage, velocity, 120.0, EnemyManager.SOURCE_WEAPON, weapon.player)

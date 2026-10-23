@@ -1,0 +1,16 @@
+{
+  "name": "noche-de-almas-relay",
+  "version": "1.0.0",
+  "description": "Servidor de salas para el multijugador online de Noche de Almas: une a dos jugadores con un código y reenvía sus mensajes.",
+  "main": "relay.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node relay.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "8.18.0"
+  }
+}

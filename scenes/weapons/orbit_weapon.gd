@@ -66,7 +66,7 @@ func _hit_enemies() -> void:
 			if _time - _last_hit.get(key, -INF) < HIT_INTERVAL:
 				continue
 			_last_hit[key] = _time
-			enemies.damage(enemy, hit_damage, enemy.position - player.global_position, 180.0)
+			enemies.damage(enemy, hit_damage, enemy.position - player.global_position, 180.0, EnemyManager.SOURCE_WEAPON, player)
 	if _last_hit.size() > 500:
 		_last_hit.clear()
 

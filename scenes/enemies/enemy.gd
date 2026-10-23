@@ -176,9 +176,16 @@ func _apply_spawn_visual() -> void:
 
 
 func _draw() -> void:
+	NetDraw.paint(self, draw_ops())
+
+
+## Elites show a health bar over their head (see NetDraw).
+func draw_ops() -> Array:
 	if not is_elite or not alive:
-		return
+		return []
 	var width := 70.0
 	var origin := Vector2(-width / 2.0, -_height * 0.6 - 14.0)
-	draw_rect(Rect2(origin - Vector2(2, 2), Vector2(width + 4, 10)), Palette.INK)
-	draw_rect(Rect2(origin, Vector2(width * maxf(health, 0.0) / max_health, 6)), Palette.GOLD)
+	return [
+		[NetDraw.RECT, Rect2(origin - Vector2(2, 2), Vector2(width + 4, 10)), Palette.INK],
+		[NetDraw.RECT, Rect2(origin, Vector2(width * maxf(health, 0.0) / max_health, 6)), Palette.GOLD],
+	]

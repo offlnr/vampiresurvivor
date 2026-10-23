@@ -76,13 +76,18 @@ class EmberLayer:
 			if ember[4] <= 0.0:
 				ember[4] = TICK
 				for enemy in weapon.enemies.in_radius(ember[0], ember[1]):
-					weapon.enemies.damage(enemy, hit_damage)
+					weapon.enemies.damage(enemy, hit_damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_WEAPON, weapon.player)
 		queue_redraw()
 
 	func _draw() -> void:
+		NetDraw.paint(self, draw_ops())
+
+	func draw_ops() -> Array:
+		var ops: Array = []
 		for ember: Array in embers:
 			var fade := clampf(ember[2] / minf(ember[3], 0.6), 0.0, 1.0)
 			var flicker := 1.0 + 0.08 * sin(_time * 12.0 + ember[0].x * 0.1)
-			draw_circle(ember[0], ember[1] * flicker, Color(EMBER_COLOR, 0.35 * fade))
-			draw_circle(ember[0], ember[1] * 0.55 * flicker, Color(EMBER_COLOR, 0.6 * fade))
-			draw_circle(ember[0], ember[1] * 0.25, Color(CORE_COLOR, 0.8 * fade))
+			ops.append([NetDraw.CIRCLE, ember[0], ember[1] * flicker, Color(EMBER_COLOR, 0.35 * fade)])
+			ops.append([NetDraw.CIRCLE, ember[0], ember[1] * 0.55 * flicker, Color(EMBER_COLOR, 0.6 * fade)])
+			ops.append([NetDraw.CIRCLE, ember[0], ember[1] * 0.25, Color(CORE_COLOR, 0.8 * fade)])
+		return ops

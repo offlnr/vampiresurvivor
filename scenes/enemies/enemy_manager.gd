@@ -51,6 +51,8 @@ const ELITE_COINS := 8
 @export var ghost: EnemyData
 
 var player: Player
+## Every character the enemies hunt: the player, plus the guest's in online co-op. Empty means just `player`.
+var players: Array[Player] = []
 var effects: Effects
 var pickups: PickupManager
 var inventory: Inventory
@@ -63,6 +65,10 @@ var spawn_pause_left := 0.0
 var run_time := 0.0
 ## Multiplies enemy health, damage and how many can be alive (cauldrons raise it).
 var difficulty := 1.0
+## Online co-op: two characters hit twice as hard, so enemies get this much more health.
+var coop_health := 1.0
+## Online co-op: this many times more enemies can be alive.
+var coop_count := 1.0
 var spawning_enabled := true
 var grid := SpatialGrid.new(64.0)
 
@@ -101,7 +107,7 @@ func endless_minutes() -> float:
 
 
 func health_multiplier() -> float:
-	return current_wave().health_multiplier * pow(ENDLESS_HEALTH_GROWTH, endless_minutes()) * difficulty
+	return current_wave().health_multiplier * pow(ENDLESS_HEALTH_GROWTH, endless_minutes()) * difficulty * coop_health
 
 
 func damage_multiplier() -> float:
@@ -119,7 +125,7 @@ func spawn_interval() -> float:
 
 
 func max_alive() -> int:
-	var alive := (current_wave().max_alive + ENDLESS_EXTRA_ALIVE * endless_minutes()) * difficulty
+	var alive := (current_wave().max_alive + ENDLESS_EXTRA_ALIVE * endless_minutes()) * difficulty * coop_count
 	return mini(int(alive), HARD_CAP)
 
 
@@ -140,7 +146,7 @@ func _physics_process(delta: float) -> void:
 	elif spawn_pause_left > 0.0:
 		spawn_pause_left -= delta
 		_next_horde_time += delta
-	elif spawning_enabled and not player.is_dead:
+	elif spawning_enabled and any_player_alive():
 		_spawn_tick(delta)
 		_horde_tick()
 	_relocate_far_enemies()
@@ -153,7 +159,6 @@ func _rebuild_grid() -> void:
 
 
 func _move(delta: float) -> void:
-	var target := player.global_position
 	var keep_out := Player.BODY_RADIUS * 0.8
 	var stopped := time_stop_left > 0.0
 	for i in range(_pool.active.size() - 1, -1, -1):
@@ -184,7 +189,7 @@ func _move(delta: float) -> void:
 			enemy.animate(delta, 0.0)
 			continue
 
-		var to_player := target - enemy.position
+		var to_player := nearest_player(enemy.position).global_position - enemy.position
 		var distance := to_player.length()
 		var direction := to_player / distance if distance > 0.01 else Vector2.ZERO
 		var velocity := direction * enemy.speed
@@ -239,7 +244,7 @@ func _spawn_tick(delta: float) -> void:
 	for i in wave.spawn_batch:
 		if _normal_alive >= cap or count() >= HARD_CAP:
 			break
-		spawn(wave.pick_enemy(), offscreen_point(randf() * TAU), health_multiplier())
+		spawn(wave.pick_enemy(), offscreen_point(randf() * TAU, spawn_anchor()), health_multiplier())
 
 
 func spawn(enemy_data: EnemyData, pos: Vector2, health_multiplier := 1.0, elite := false, horde := false) -> Enemy:
@@ -258,7 +263,7 @@ func spawn_burst(amount: int) -> void:
 	for i in amount:
 		if count() >= HARD_CAP:
 			return
-		spawn(wave.pick_enemy(), offscreen_point(randf() * TAU), health_multiplier(), false, true)
+		spawn(wave.pick_enemy(), offscreen_point(randf() * TAU, spawn_anchor()), health_multiplier(), false, true)
 
 
 # --- Hordes -----------------------------------------------------------------
@@ -305,12 +310,13 @@ func _spawn_ring(amount: int, health: float) -> void:
 	var half := visible_half_extents()
 	var radius := half.length() + SPAWN_MARGIN
 	var start := randf() * TAU
+	var center := spawn_anchor().global_position
 	for i in amount:
 		if count() >= HARD_CAP:
 			break
 		var angle := start + TAU * i / amount
-		spawn(zombie, player.global_position + Vector2.from_angle(angle) * radius, health, false, true)
-	spawn(zombie, player.global_position + Vector2.from_angle(start + PI / amount) * (radius + 40.0), health, true, true)
+		spawn(zombie, center + Vector2.from_angle(angle) * radius, health, false, true)
+	spawn(zombie, center + Vector2.from_angle(start + PI / amount) * (radius + 40.0), health, true, true)
 
 
 func _spawn_swarm(amount: int, health: float) -> void:
@@ -318,7 +324,7 @@ func _spawn_swarm(amount: int, health: float) -> void:
 	var side := Vector2.from_angle(angle)
 	var across := side.orthogonal()
 	var half := visible_half_extents()
-	var origin := offscreen_point(angle) + side * 40.0
+	var origin := offscreen_point(angle, spawn_anchor()) + side * 40.0
 	var width := maxf(half.x, half.y) * 1.6
 	for i in amount:
 		if count() >= HARD_CAP:
@@ -334,7 +340,7 @@ func _spawn_charge(amount: int, health: float) -> void:
 	var angle := randf() * TAU
 	var side := Vector2.from_angle(angle)
 	var across := side.orthogonal()
-	var origin := offscreen_point(angle)
+	var origin := offscreen_point(angle, spawn_anchor())
 	for i in amount:
 		if count() >= HARD_CAP:
 			break
@@ -349,21 +355,57 @@ func visible_half_extents() -> Vector2:
 	return get_viewport_rect().size / player.camera.zoom * 0.5
 
 
-## A point just outside the visible area, in the given direction from the player.
-func offscreen_point(angle: float) -> Vector2:
+## A point just outside the visible area, in the given direction from `around` (the player by default).
+func offscreen_point(angle: float, around: Player = null) -> Vector2:
 	var half := visible_half_extents()
 	var direction := Vector2.from_angle(angle)
 	var to_edge := minf(half.x / maxf(absf(direction.x), 0.001), half.y / maxf(absf(direction.y), 0.001))
-	return player.global_position + direction * (to_edge + SPAWN_MARGIN)
+	return (around if around != null else player).global_position + direction * (to_edge + SPAWN_MARGIN)
+
+
+func all_players() -> Array[Player]:
+	if players.is_empty():
+		return [player]
+	return players
+
+
+func any_player_alive() -> bool:
+	for p in all_players():
+		if not p.is_dead:
+			return true
+	return false
+
+
+## The living character nearest to `pos` (the player when everyone is dead).
+func nearest_player(pos: Vector2) -> Player:
+	var best := player
+	var best_distance := INF
+	for p in all_players():
+		var distance := p.global_position.distance_squared_to(pos)
+		if not p.is_dead and distance < best_distance:
+			best = p
+			best_distance = distance
+	return best
+
+
+## A random living character for new enemies to appear around, so in co-op both get company.
+func spawn_anchor() -> Player:
+	var alive: Array[Player] = []
+	for p in all_players():
+		if not p.is_dead:
+			alive.append(p)
+	return alive.pick_random() if not alive.is_empty() else player
 
 
 func _relocate_far_enemies() -> void:
 	var half := visible_half_extents()
 	var limit := maxf(half.x, half.y) * 4.0
-	var heading := player.last_move_direction.angle()
 	for enemy: Enemy in _pool.active:
-		if enemy.fixed_velocity == Vector2.ZERO and enemy.position.distance_to(player.global_position) > limit:
-			enemy.position = offscreen_point(heading + randf_range(-1.0, 1.0))
+		if enemy.fixed_velocity != Vector2.ZERO:
+			continue
+		if enemy.position.distance_to(nearest_player(enemy.position).global_position) > limit:
+			var anchor := spawn_anchor()
+			enemy.position = offscreen_point(anchor.last_move_direction.angle() + randf_range(-1.0, 1.0), anchor)
 
 
 func contact_damage_at(pos: Vector2, radius: float) -> float:
@@ -417,32 +459,37 @@ func on_screen() -> Array[Enemy]:
 
 # --- Damage -----------------------------------------------------------------
 
-func damage(enemy: Enemy, amount: float, push_direction := Vector2.ZERO, push_strength := 0.0, source := SOURCE_WEAPON) -> void:
+## `attacker` is the character whose weapon or item hit (the player when unknown): its items,
+## crits, lifesteal and knockback apply, which matters in online co-op.
+func damage(enemy: Enemy, amount: float, push_direction := Vector2.ZERO, push_strength := 0.0, source := SOURCE_WEAPON,
+		attacker: Player = null) -> void:
 	if not enemy.alive:
 		return
+	var who := attacker if attacker != null else player
+	var items: Inventory = who.inventory if who.inventory != null else inventory
 	var critical := false
-	if source == SOURCE_WEAPON and inventory != null:
-		var bonus: Array = inventory.hit_multiplier(enemy)
+	if source == SOURCE_WEAPON and items != null:
+		var bonus: Array = items.hit_multiplier(enemy)
 		amount *= bonus[0]
 		critical = bonus[1]
-		if inventory.roll_crit():
-			amount *= inventory.crit_multiplier()
+		if items.roll_crit():
+			amount *= items.crit_multiplier()
 			critical = true
 	# Lifesteal only counts weapon damage the enemy actually had health for (no overkill).
 	if source == SOURCE_WEAPON:
-		player.on_damage_dealt(minf(amount, enemy.health))
+		who.on_damage_dealt(minf(amount, enemy.health))
 	enemy.health -= amount
 	enemy.flash()
 	if push_strength > 0.0 and push_direction != Vector2.ZERO and not enemy.is_elite and not enemy.data.knockback_immune:
-		var push := push_strength * (player.knockback_multiplier if source == SOURCE_WEAPON else 1.0)
+		var push := push_strength * (who.knockback_multiplier if source == SOURCE_WEAPON else 1.0)
 		enemy.knockback += push_direction.normalized() * push
 	var color := Palette.GOLD if critical else (Palette.GREEN if source == SOURCE_ITEM else Palette.BONE)
 	effects.damage_number(enemy.position + Vector2(0, -enemy.radius * 2.0), amount, color, critical)
 	Audio.play(&"hit", 0.15, -8.0)
 	if enemy.health <= 0.0:
-		_kill(enemy)
-	elif source == SOURCE_WEAPON and inventory != null:
-		inventory.on_weapon_hit(enemy, amount)
+		_kill(enemy, items)
+	elif source == SOURCE_WEAPON and items != null:
+		items.on_weapon_hit(enemy, amount)
 
 
 ## Bomb power-up: no new enemies for `seconds`.
@@ -468,8 +515,9 @@ func _explode(enemy: Enemy) -> void:
 	effects.shockwave(enemy.position, Palette.ORANGE, 1.6)
 	Audio.play(&"boom", 0.1, -10.0)
 	var reach := enemy.data.attack_range * EXPLOSION_REACH
-	if enemy.position.distance_to(player.global_position) <= reach:
-		player.take_damage(enemy.data.attack_damage * enemy.damage_multiplier)
+	for p in all_players():
+		if enemy.position.distance_to(p.global_position) <= reach:
+			p.take_damage(enemy.data.attack_damage * enemy.damage_multiplier)
 	_kill(enemy)
 
 
@@ -500,10 +548,13 @@ func _move_potions(delta: float) -> void:
 		var velocity: Vector2 = potion.get_meta(&"velocity")
 		potion.position += velocity * delta
 		potion.rotation += delta * 8.0
-		var hit := potion.position.distance_to(player.global_position) < Player.BODY_RADIUS + POTION_HIT_RADIUS
-		if hit and not player.is_dead:
-			player.take_damage(potion.get_meta(&"damage"))
-			effects.shockwave(potion.position, Palette.GREEN, 0.6)
+		var hit := false
+		for p in all_players():
+			if not p.is_dead and potion.position.distance_to(p.global_position) < Player.BODY_RADIUS + POTION_HIT_RADIUS:
+				hit = true
+				p.take_damage(potion.get_meta(&"damage"))
+				effects.shockwave(potion.position, Palette.GREEN, 0.6)
+				break
 		if hit or life <= 0.0:
 			_potions.remove_at(i)
 			potion.queue_free()
@@ -515,7 +566,9 @@ func kill_all() -> void:
 		_release(enemy)
 
 
-func _kill(enemy: Enemy) -> void:
+func _kill(enemy: Enemy, items: Inventory = null) -> void:
+	if items == null:
+		items = inventory
 	effects.death(enemy)
 	pickups.spawn_soul(enemy.position, enemy.xp_value)
 	if enemy.is_elite:
@@ -527,8 +580,8 @@ func _kill(enemy: Enemy) -> void:
 			pickups.spawn_coins(enemy.position, 1)
 		if randf() < PowerUps.DROP_CHANCE:
 			pickups.spawn_power_up(enemy.position, PowerUps.roll())
-	if inventory != null:
-		inventory.on_kill(enemy)
+	if items != null:
+		items.on_kill(enemy)
 	Audio.play(&"enemy_die", 0.15, -5.0)
 	Events.enemy_killed.emit(enemy.data, enemy.position)
 	_release(enemy)

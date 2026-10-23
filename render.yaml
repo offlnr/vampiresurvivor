@@ -1,0 +1,12 @@
+# Render blueprint for the online co-op room server (server/relay.js).
+# In Render: New > Blueprint > pick this repository. The free plan is enough; it sleeps after
+# 15 minutes without players and takes up to a minute to wake up on the next connection.
+services:
+  - type: web
+    name: noche-de-almas-relay
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /

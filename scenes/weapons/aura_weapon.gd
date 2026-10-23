@@ -23,7 +23,7 @@ func _attack() -> bool:
 	var hit_damage := damage()
 	var hit := enemies.in_radius(player.global_position, area())
 	for enemy in hit:
-		enemies.damage(enemy, hit_damage, enemy.position - player.global_position, 50.0)
+		enemies.damage(enemy, hit_damage, enemy.position - player.global_position, 50.0, EnemyManager.SOURCE_WEAPON, player)
 	if not hit.is_empty():
 		_pulse = 1.0
 	return true

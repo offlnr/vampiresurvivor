@@ -11,6 +11,8 @@ const DAILY_GIFT_SILVER := 5
 var _bats: Array[Dictionary] = []
 var _unlocks_button: Button
 var _unlocks_menu: UnlocksMenu
+var _online_button: Button
+var _online_menu: MultiplayerMenu
 var _gift_button: Button
 var _time := 0.0
 
@@ -53,6 +55,17 @@ func _ready() -> void:
 	_unlocks_menu = UnlocksMenu.new()
 	_unlocks_menu.closed.connect(_on_unlocks_closed)
 	add_child(_unlocks_menu)
+	# Online co-op, right under "Jugar".
+	_online_button = Button.new()
+	_online_button.text = "Multijugador online"
+	_online_button.custom_minimum_size = Vector2(340, 64)
+	_online_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_online_button.pressed.connect(_on_online)
+	box.add_child(_online_button)
+	box.move_child(_online_button, play_button.get_index() + 1)
+	_online_menu = MultiplayerMenu.new()
+	_online_menu.closed.connect(_online_button.grab_focus)
+	add_child(_online_menu)
 	# Optional daily gift (rewarded ad), in a corner so it never gets in the way.
 	_gift_button = Button.new()
 	_gift_button.text = "Regalo diario: +%d plata (anuncio)" % DAILY_GIFT_SILVER
@@ -144,6 +157,11 @@ func _fit_title() -> void:
 func _on_play() -> void:
 	Audio.play(&"click", 0.0)
 	get_tree().change_scene_to_file(RUN_SCENE)
+
+
+func _on_online() -> void:
+	Audio.play(&"click", 0.0)
+	_online_menu.open()
 
 
 func _on_options() -> void:

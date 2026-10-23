@@ -61,16 +61,22 @@ class Vortex:
 			_tick_left = TICK
 			var hit_damage := weapon.damage()
 			for enemy in weapon.enemies.in_radius(position, radius):
-				weapon.enemies.damage(enemy, hit_damage)
+				weapon.enemies.damage(enemy, hit_damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_WEAPON, weapon.player)
 		queue_redraw()
 
 	func _draw() -> void:
+		NetDraw.paint(self, draw_ops())
+
+	func draw_ops() -> Array:
 		var grow := clampf(_time / OPEN_TIME, 0.0, 1.0) * clampf(life / OPEN_TIME, 0.0, 1.0)
 		var r := radius * grow
-		draw_circle(Vector2.ZERO, r, Color(COLOR, 0.28))
-		draw_circle(Vector2.ZERO, r * 0.35, Color(Palette.INK, 0.8))
+		var ops: Array = [
+			[NetDraw.CIRCLE, Vector2.ZERO, r, Color(COLOR, 0.28)],
+			[NetDraw.CIRCLE, Vector2.ZERO, r * 0.35, Color(Palette.INK, 0.8)],
+		]
 		for arm in 4:
 			var start := _time * 4.0 + TAU * arm / 4.0
-			draw_arc(Vector2.ZERO, r * 0.7, start, start + 1.4, 12, Color(RIM, 0.75), 3.0)
-			draw_arc(Vector2.ZERO, r * 0.45, -start, -start + 1.1, 10, Color(RIM, 0.55), 2.0)
-		draw_arc(Vector2.ZERO, r, 0.0, TAU, 40, Color(RIM, 0.5), 2.0)
+			ops.append([NetDraw.ARC, Vector2.ZERO, r * 0.7, start, start + 1.4, 12, Color(RIM, 0.75), 3.0])
+			ops.append([NetDraw.ARC, Vector2.ZERO, r * 0.45, -start, -start + 1.1, 10, Color(RIM, 0.55), 2.0])
+		ops.append([NetDraw.ARC, Vector2.ZERO, r, 0.0, TAU, 40, Color(RIM, 0.5), 2.0])
+		return ops

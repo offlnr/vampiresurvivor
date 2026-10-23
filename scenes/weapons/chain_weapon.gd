@@ -32,7 +32,7 @@ func _strike(first: Enemy, hit_damage: float, jumps: int, reach: float) -> void:
 		hit[current] = true
 		points.append(current.position)
 		var from := current.position
-		enemies.damage(current, hit_damage, Vector2.ZERO, 0.0)
+		enemies.damage(current, hit_damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_WEAPON, player)
 		current = null
 		if hit.size() > jumps:
 			break

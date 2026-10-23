@@ -1,7 +1,7 @@
 class_name Cauldrons
 extends Node2D
-## Cursed cauldrons scattered around the player. Standing on one for a moment brews it:
-## the run gets harder and the player earns more experience and gold.
+## Cursed cauldrons scattered around the player. Standing on one for a moment brews it (in co-op,
+## either player can): the run gets harder and the players earn more experience and gold.
 
 signal brewed(position: Vector2)
 
@@ -19,6 +19,8 @@ const REACH := 46.0
 const BREW_TIME := 1.5
 
 var player: Player
+## Every character that can brew: the player, plus the guest's in online co-op. Empty means just `player`.
+var players: Array[Player] = []
 var decorations: Decorations
 
 var _cauldrons: Array[Cauldron] = []
@@ -33,19 +35,25 @@ func positions() -> Array[Vector2]:
 
 
 func _physics_process(delta: float) -> void:
-	if player == null or player.is_dead:
+	var alive: Array[Player] = []
+	for p in players if not players.is_empty() else [player]:
+		if p != null and not p.is_dead:
+			alive.append(p)
+	if alive.is_empty():
 		return
 	_time += delta
 	while _cauldrons.size() < COUNT:
 		_spawn()
-	var target := player.global_position
 	for cauldron in _cauldrons.duplicate():
-		if cauldron.position.distance_to(target) > RELOCATE_DISTANCE:
+		var nearest := INF
+		for p in alive:
+			nearest = minf(nearest, cauldron.position.distance_to(p.global_position))
+		if nearest > RELOCATE_DISTANCE:
 			cauldron.position = _random_spot()
 			cauldron.set_progress(0.0)
 			continue
 		cauldron.animate(_time)
-		if cauldron.position.distance_to(target) < REACH:
+		if nearest < REACH:
 			cauldron.set_progress(cauldron.progress + delta / BREW_TIME)
 			if cauldron.progress >= 1.0:
 				_brew(cauldron)
@@ -109,7 +117,12 @@ class Cauldron extends Node2D:
 		queue_redraw()
 
 	func _draw() -> void:
+		NetDraw.paint(self, draw_ops())
+
+	func draw_ops() -> Array:
 		if progress <= 0.0:
-			return
-		draw_arc(Vector2(0, -20), 42.0, 0.0, TAU, 40, Color(Palette.INK, 0.7), 8.0, true)
-		draw_arc(Vector2(0, -20), 42.0, -PI / 2.0, -PI / 2.0 + TAU * progress, 40, Palette.GREEN, 5.0, true)
+			return []
+		return [
+			[NetDraw.ARC, Vector2(0, -20), 42.0, 0.0, TAU, 40, Color(Palette.INK, 0.7), 8.0],
+			[NetDraw.ARC, Vector2(0, -20), 42.0, -PI / 2.0, -PI / 2.0 + TAU * progress, 40, Palette.GREEN, 5.0],
+		]

@@ -41,7 +41,7 @@ func _physics_process(delta: float) -> void:
 		if _hit.has(enemy):
 			continue
 		_hit[enemy] = true
-		weapon.enemies.damage(enemy, damage, velocity, 140.0)
+		weapon.enemies.damage(enemy, damage, velocity, 140.0, EnemyManager.SOURCE_WEAPON, weapon.player)
 		pierce_left -= 1
 		if pierce_left < 0:
 			weapon.release_projectile(self)

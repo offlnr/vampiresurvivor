@@ -1,6 +1,9 @@
 extends Node
 ## Plays sound effects from a fixed set of voices per sound, plus one music track.
 
+## A sound effect started; the online host forwards it to the guest (see NetHost).
+signal played(sound: StringName, volume_db: float)
+
 const SOUNDS := {
 	&"hit": preload("res://art/placeholder/audio/hit.wav"),
 	&"enemy_die": preload("res://art/placeholder/audio/enemy_die.wav"),
@@ -70,6 +73,7 @@ func play(sound: StringName, pitch_jitter := 0.08, volume_db := 0.0) -> void:
 			player.volume_db = volume_db
 			player.play()
 			_last_played[sound] = now
+			played.emit(sound, volume_db)
 			return
 
 

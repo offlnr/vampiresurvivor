@@ -1,8 +1,8 @@
 class_name MapChests
 extends Node2D
-## Paid chests scattered around the player. Touching one asks the run to buy it.
+## Paid chests scattered around the player. Touching one asks the run to buy it for whoever touched it.
 
-signal chest_touched(chest: Node2D)
+signal chest_touched(chest: Node2D, toucher: Player)
 
 const TEXTURE := preload("res://art/placeholder/chest_paid.svg")
 const COIN := preload("res://art/placeholder/coin.svg")
@@ -15,12 +15,14 @@ const REACH := 40.0
 const FIRST_TIME := 20.0
 
 var player: Player
+## Every character that can open chests: the player, plus the guest's in online co-op. Empty means just `player`.
+var players: Array[Player] = []
 var decorations: Decorations
 var price := 25
 var run_time := 0.0
 
 var _chests: Array[Node2D] = []
-## Chests the player is standing on, so a chest he can't afford isn't asked for every frame.
+## [chest, player] pairs standing on each other, so a chest someone can't afford isn't asked for every frame.
 var _touching := {}
 var _time := 0.0
 
@@ -33,30 +35,42 @@ func positions() -> Array[Vector2]:
 
 
 func _physics_process(delta: float) -> void:
-	if player == null or player.is_dead or run_time < FIRST_TIME:
+	var alive: Array[Player] = []
+	for p in players if not players.is_empty() else [player]:
+		if p != null and not p.is_dead:
+			alive.append(p)
+	if alive.is_empty() or run_time < FIRST_TIME:
 		return
 	_time += delta
 	while _chests.size() < COUNT:
 		_spawn()
-	var target := player.global_position
 	for chest: Node2D in _chests.duplicate():
 		var label: Label = chest.get_node("Price")
 		label.text = str(price)
-		if chest.position.distance_to(target) > RELOCATE_DISTANCE:
+		var nearest := INF
+		for p in alive:
+			nearest = minf(nearest, chest.position.distance_to(p.global_position))
+		if nearest > RELOCATE_DISTANCE:
 			chest.position = _random_spot()
 			continue
 		chest.get_node("Sprite").offset.y = sin(_time * 3.0 + chest.position.x) * 3.0
-		var touching: bool = chest.position.distance_to(target) < REACH
-		if touching and not _touching.has(chest):
-			_touching[chest] = true
-			chest_touched.emit(chest)
-		elif not touching:
-			_touching.erase(chest)
+		for p in alive:
+			var key := [chest, p]
+			var touching: bool = chest.position.distance_to(p.global_position) < REACH
+			if touching and not _touching.has(key):
+				_touching[key] = true
+				chest_touched.emit(chest, p)
+				if not _chests.has(chest):
+					break
+			elif not touching:
+				_touching.erase(key)
 
 
 func open(chest: Node2D) -> void:
 	_chests.erase(chest)
-	_touching.erase(chest)
+	for key: Array in _touching.keys():
+		if key[0] == chest:
+			_touching.erase(key)
 	var tween := chest.create_tween()
 	tween.tween_property(chest, "scale", Vector2(1.4, 0.2), 0.2)
 	tween.tween_callback(chest.queue_free)

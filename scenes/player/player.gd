@@ -67,6 +67,10 @@ var silver_multiplier := 1.0
 var gold_bonus := 0.0
 var is_dead := false
 var last_move_direction := Vector2.RIGHT
+## Online co-op: the guest's character moves with the direction the guest sends (see NetHost)
+## instead of this device's controls.
+var remote_input := false
+var remote_direction := Vector2.ZERO
 
 var _invulnerable_left := 0.0
 var _since_hit := 0.0
@@ -146,7 +150,7 @@ func pickup_radius() -> float:
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
-	var direction := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
+	var direction := remote_direction.limit_length(1.0) if remote_input else Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
 	velocity = direction * move_speed()
 	move_and_slide()
 	if decorations != null:
@@ -228,7 +232,7 @@ func _hit_back() -> void:
 		return
 	var hit_damage := thorns * damage_multiplier
 	for enemy in enemies.in_radius(global_position, BODY_RADIUS + THORNS_REACH):
-		enemies.damage(enemy, hit_damage, enemy.position - global_position, 160.0, EnemyManager.SOURCE_ITEM)
+		enemies.damage(enemy, hit_damage, enemy.position - global_position, 160.0, EnemyManager.SOURCE_ITEM, self)
 
 
 ## Called for every hit the player's weapons land, with the damage the enemy had health for.
@@ -300,12 +304,19 @@ func _update_zoom() -> void:
 
 
 func _draw() -> void:
-	# Small health bar under the character, as in the genre.
+	NetDraw.paint(self, draw_ops())
+
+
+## Small health bar under the character, as in the genre (see NetDraw).
+func draw_ops() -> Array:
 	var width := 44.0
 	var origin := Vector2(-width / 2.0, VISUAL_HEIGHT / 2.0 + 8.0)
-	draw_rect(Rect2(origin - Vector2(2, 2), Vector2(width + 4, 9)), Palette.INK)
-	draw_rect(Rect2(origin, Vector2(width * health / max_health, 5)), Palette.RED)
+	var ops: Array = [
+		[NetDraw.RECT, Rect2(origin - Vector2(2, 2), Vector2(width + 4, 9)), Palette.INK],
+		[NetDraw.RECT, Rect2(origin, Vector2(width * health / max_health, 5)), Palette.RED],
+	]
 	if shield_max > 0.0:
 		var top := origin + Vector2(0, 9)
-		draw_rect(Rect2(top - Vector2(2, 2), Vector2(width + 4, 7)), Palette.INK)
-		draw_rect(Rect2(top, Vector2(width * shield / shield_max, 3)), SHIELD_COLOR)
+		ops.append([NetDraw.RECT, Rect2(top - Vector2(2, 2), Vector2(width + 4, 7)), Palette.INK])
+		ops.append([NetDraw.RECT, Rect2(top, Vector2(width * shield / shield_max, 3)), SHIELD_COLOR])
+	return ops

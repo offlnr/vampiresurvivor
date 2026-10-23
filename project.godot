@@ -26,6 +26,7 @@ Settings="*res://autoload/settings.gd"
 Audio="*res://autoload/audio.gd"
 Progress="*res://autoload/progress.gd"
 Ads="*res://autoload/ads.gd"
+Net="*res://autoload/net.gd"
 
 [display]
 

@@ -241,7 +241,7 @@ func on_weapon_hit(enemy: Enemy, damage: float) -> void:
 	if randf() < amount(ItemData.Effect.EXECUTE) and not enemy.is_elite:
 		execute_bonus += EXECUTE_DAMAGE_BONUS
 		effects.shockwave(enemy.position, Palette.RED, 0.8)
-		enemies.damage(enemy, enemy.health + 1.0, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM)
+		enemies.damage(enemy, enemy.health + 1.0, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM, player)
 		return
 	if randf() < amount(ItemData.Effect.POISON_ON_HIT):
 		enemy.poison(damage * POISON_SHARE / POISON_DURATION, POISON_DURATION)
@@ -252,12 +252,12 @@ func on_weapon_hit(enemy: Enemy, damage: float) -> void:
 		for other in enemies.in_radius(enemy.position, CLOUD_RADIUS):
 			other.poison(damage * POISON_SHARE / POISON_DURATION, POISON_DURATION)
 	if randf() < amount(ItemData.Effect.ECHO):
-		enemies.damage(enemy, damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM)
+		enemies.damage(enemy, damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM, player)
 	if randf() < amount(ItemData.Effect.EXPLODE_ON_HIT):
 		effects.shockwave(enemy.position, Palette.ORANGE, 1.0)
 		for other in enemies.in_radius(enemy.position, EXPLOSION_RADIUS):
 			if other != enemy:
-				enemies.damage(other, damage * EXPLOSION_SHARE, other.position - enemy.position, 120.0, EnemyManager.SOURCE_ITEM)
+				enemies.damage(other, damage * EXPLOSION_SHARE, other.position - enemy.position, 120.0, EnemyManager.SOURCE_ITEM, player)
 	if randf() < amount(ItemData.Effect.LIGHTNING_ON_HIT):
 		_lightning(enemy, damage)
 	if randf() < amount(ItemData.Effect.BURN_ON_HIT):
@@ -287,7 +287,7 @@ func on_player_hurt(damage: float) -> void:
 	if shock > 0.0:
 		effects.shockwave(player.global_position, Color("6cc8ff"), 1.6)
 		for enemy in enemies.in_radius(player.global_position, SHOCK_RADIUS):
-			enemies.damage(enemy, strongest_hit() * shock, enemy.position - player.global_position, 160.0, EnemyManager.SOURCE_ITEM)
+			enemies.damage(enemy, strongest_hit() * shock, enemy.position - player.global_position, 160.0, EnemyManager.SOURCE_ITEM, player)
 	var miasma := amount(ItemData.Effect.POISON_ON_HURT)
 	if miasma > 0.0:
 		effects.shockwave(player.global_position, Palette.GREEN, 2.2)
@@ -298,7 +298,7 @@ func on_player_hurt(damage: float) -> void:
 		return
 	effects.shockwave(player.global_position, Palette.PURPLE_LIGHT, 1.4)
 	for enemy in enemies.in_radius(player.global_position, MIRROR_RADIUS):
-		enemies.damage(enemy, damage * reflect, enemy.position - player.global_position, 200.0, EnemyManager.SOURCE_ITEM)
+		enemies.damage(enemy, damage * reflect, enemy.position - player.global_position, 200.0, EnemyManager.SOURCE_ITEM, player)
 
 
 ## Damage of souls flying to the player (grimoire), from the strongest weapon hit. 0 if none.
@@ -363,13 +363,13 @@ func _lightning(first: Enemy, damage: float) -> void:
 		points.append(current.position)
 		var from := current.position
 		if current != first:
-			enemies.damage(current, damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM)
+			enemies.damage(current, damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM, player)
 		current = null
 		for other in enemies.nearest(from, LIGHTNING_REACH, 5):
 			if not hit.has(other) and other.alive:
 				current = other
 				break
-	enemies.damage(first, damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM)
+	enemies.damage(first, damage, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM, player)
 	var line := Line2D.new()
 	line.points = points
 	line.width = 3.0
@@ -386,7 +386,7 @@ func _voodoo(extra_targets: int) -> void:
 	var hit := strongest_hit() * VOODOO_WEAPON_SHARE
 	for enemy in enemies.nearest(player.global_position, VOODOO_RANGE, 2 + extra_targets):
 		effects.shockwave(enemy.position, Palette.PURPLE_LIGHT, 0.5)
-		enemies.damage(enemy, hit, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM)
+		enemies.damage(enemy, hit, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM, player)
 
 
 func _release_spirit(pos: Vector2) -> void:
@@ -415,6 +415,6 @@ func _move_spirits(delta: float) -> void:
 		spirit.position = spirit.position.move_toward(target.position, SPIRIT_SPEED * delta)
 		spirit.rotation = sin(life * 10.0) * 0.3
 		if spirit.position.distance_to(target.position) < target.radius + 8.0:
-			enemies.damage(target, strongest_hit() * SPIRIT_WEAPON_SHARE, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM)
+			enemies.damage(target, strongest_hit() * SPIRIT_WEAPON_SHARE, Vector2.ZERO, 0.0, EnemyManager.SOURCE_ITEM, player)
 			_spirits.remove_at(i)
 			spirit.queue_free()

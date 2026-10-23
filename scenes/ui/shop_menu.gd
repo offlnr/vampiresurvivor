@@ -13,6 +13,9 @@ const INPUT_DELAY := 0.3
 var inventory: Inventory
 ## Returns the sections the stats panel shows; set by the run.
 var stats_provider: Callable
+## Returns how many copies of an item the player owns, when there is no local `inventory`
+## (the online guest's items live on the host).
+var owned_provider: Callable
 
 var _chest_mode := false
 var _stats_button: Button
@@ -100,7 +103,7 @@ func _build(items: Array[ItemData], prices: Array[int], gold: int, rerolls: int,
 	for i in items.size():
 		var item := items[i]
 		var affordable := gold >= prices[i]
-		var owned := inventory.copies(item) if inventory != null else 0
+		var owned: int = inventory.copies(item) if inventory != null else (owned_provider.call(item) if owned_provider.is_valid() else 0)
 		var row := UiCards.make_row(item.icon, item.rarity, "Tienes %d" % owned if owned > 0 else "Nuevo",
 			item.display_name, item.describe(), _on_buy.bind(i), rerolls > 0, banishes > 0,
 			reroll_requested.emit.bind(i), banish_requested.emit.bind(i), _footer(prices[i], affordable), affordable)
