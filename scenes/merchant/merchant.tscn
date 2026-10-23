@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/merchant/merchant.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/placeholder/merchant/body.svg" id="2_body"]
+[ext_resource type="Texture2D" path="res://art/placeholder/merchant/hat.svg" id="3_hat"]
+[ext_resource type="Texture2D" path="res://art/placeholder/puff.svg" id="4_glow"]
+
+[node name="Merchant" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Glow" type="Sprite2D" parent="."]
+position = Vector2(0, -30)
+texture = ExtResource("4_glow")
+
+[node name="Body" type="Sprite2D" parent="."]
+position = Vector2(0, -42)
+texture = ExtResource("2_body")
+
+[node name="Hat" type="Sprite2D" parent="Body"]
+position = Vector2(0, -42)
+texture = ExtResource("3_hat")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -80.0
+offset_top = -128.0
+offset_right = 80.0
+offset_bottom = -100.0
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1

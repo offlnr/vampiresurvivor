@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/wisp.svg" id="1_ylugq"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/zone_weapon.tscn" id="2_tr152"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_udl4f"]
+
+[resource]
+script = ExtResource("3_udl4f")
+id = &"wisp"
+display_name = "Fuego fatuo"
+icon = ExtResource("1_ylugq")
+pattern = 5
+scene = ExtResource("2_tr152")
+description = "Llamas que caen sobre enemigos y dejan el suelo ardiendo."
+amount_singular = "llama"
+amount_plural = "llamas"
+area_label = "radio"
+attack_range = 360.0
+damage = 6.0
+cooldown = 2.4
+area = 55.0
+duration = 2.5
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"duration"])
+upgrade_values = PackedFloat32Array(0.3, 1, 0.08, 0.12, 0.15)

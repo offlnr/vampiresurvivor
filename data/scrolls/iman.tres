@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/iman.svg" id="1_dkhq2"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_xav07"]
+
+[resource]
+script = ExtResource("2_xav07")
+id = &"iman"
+display_name = "Pergamino del imán"
+icon = ExtResource("1_dkhq2")
+description = "+{value} % de radio de atracción."
+stat = 2
+amount_per_level = 0.2

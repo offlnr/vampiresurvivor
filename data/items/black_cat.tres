@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/black_cat.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"black_cat"
+display_name = "Gato negro"
+icon = ExtResource("1_icon")
+effect = 25
+value = 0.05
+description = "+{value} % de suerte y +{value} % de evasión."

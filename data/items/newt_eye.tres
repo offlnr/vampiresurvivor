@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/newt_eye.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"newt_eye"
+display_name = "Ojo de tritón"
+icon = ExtResource("1_icon")
+effect = 26
+value = 0.25
+description = "+{value} % de radio de atracción."

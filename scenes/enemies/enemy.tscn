@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/enemies/enemy.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/placeholder/shadow.svg" id="2_shadow"]
+[ext_resource type="Shader" path="res://scenes/enemies/silhouette.gdshader" id="3_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gold"]
+shader = ExtResource("3_shader")
+shader_parameter/color = Color(1, 0.79, 0.24, 1)
+
+[node name="Enemy" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+texture = ExtResource("2_shadow")
+
+[node name="Outline" type="AnimatedSprite2D" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_gold")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]

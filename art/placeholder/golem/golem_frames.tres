@@ -1,0 +1,26 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/golem/walk_0.svg" id="1_r60l7"]
+[ext_resource type="Texture2D" path="res://art/placeholder/golem/walk_1.svg" id="2_oiob8"]
+[ext_resource type="Texture2D" path="res://art/placeholder/golem/walk_2.svg" id="3_ly6u8"]
+[ext_resource type="Texture2D" path="res://art/placeholder/golem/walk_3.svg" id="4_uxc07"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_r60l7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_oiob8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_ly6u8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_uxc07")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 4.0
+}]

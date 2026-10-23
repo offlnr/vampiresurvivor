@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="SpriteFrames" path="res://art/placeholder/skeleton/skeleton_frames.tres" id="1_87o6a"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="2_3pi28"]
+
+[resource]
+script = ExtResource("2_3pi28")
+id = &"skeleton"
+display_name = "Esqueleto"
+frames = ExtResource("1_87o6a")
+visual_height = 62.0
+radius = 17.0
+speed = 88.0
+max_health = 30.0
+contact_damage = 10.0
+xp_value = 3
+gold_chance = 0.2

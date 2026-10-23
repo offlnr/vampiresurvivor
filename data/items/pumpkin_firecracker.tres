@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/pumpkin_firecracker.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"pumpkin_firecracker"
+display_name = "Petardo de calabaza"
+icon = ExtResource("1_icon")
+rarity = 3
+effect = 44
+value = 0.2
+description = "{value} % de que un golpe explote y haga el 65 % de su daño a los enemigos de alrededor."

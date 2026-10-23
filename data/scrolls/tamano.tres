@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/tamano.svg" id="1_pvg0a"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_uru0f"]
+
+[resource]
+script = ExtResource("2_uru0f")
+id = &"tamano"
+display_name = "Pergamino de tamaño"
+icon = ExtResource("1_pvg0a")
+description = "+{value} % de tamaño."
+stat = 8

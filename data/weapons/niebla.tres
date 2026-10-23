@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/fog.svg" id="1_vqlcw"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/aura_weapon.tscn" id="2_ujjvl"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_caiwe"]
+
+[resource]
+script = ExtResource("3_caiwe")
+id = &"fog"
+display_name = "Niebla"
+icon = ExtResource("1_vqlcw")
+pattern = 2
+scene = ExtResource("2_ujjvl")
+description = "Una niebla que daña a todo lo que te rodea."
+area_label = "radio"
+damage = 5.0
+cooldown = 0.7
+area = 85.0
+upgrade_stats = Array[StringName]([&"damage", &"attack_speed", &"area"])
+upgrade_values = PackedFloat32Array(0.3, 0.1, 0.12)

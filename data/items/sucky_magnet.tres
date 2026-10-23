@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/sucky_magnet.svg" id="1_xadgg"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_6t56x"]
+
+[resource]
+script = ExtResource("2_6t56x")
+id = &"sucky_magnet"
+display_name = "Imán succionador"
+icon = ExtResource("1_xadgg")
+rarity = 4
+effect = 16
+value = 1.0
+percent = false
+description = "Atrae todas las almas y el oro del mapa cada 20 s, dividido entre las copias (2 copias: cada 10 s)."

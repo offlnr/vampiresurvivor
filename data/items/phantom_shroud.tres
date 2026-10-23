@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/phantom_shroud.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"phantom_shroud"
+display_name = "Sudario fantasmal"
+icon = ExtResource("1_icon")
+rarity = 2
+effect = 38
+value = 0.5
+description = "Al esquivar un golpe, +{value} % de velocidad de ataque y de movimiento durante 2 s."

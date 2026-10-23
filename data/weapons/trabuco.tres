@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/blunderbuss.svg" id="1_icon"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/spread_weapon.tscn" id="2_scene"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_script"]
+
+[resource]
+script = ExtResource("3_script")
+id = &"blunderbuss"
+display_name = "Trabuco de plata"
+icon = ExtResource("1_icon")
+pattern = 9
+scene = ExtResource("2_scene")
+description = "Un abanico de perdigones de plata hacia el enemigo más cercano, de corto alcance."
+amount_singular = "perdigón"
+amount_plural = "perdigones"
+attack_range = 270.0
+damage = 7.0
+cooldown = 1.3
+amount = 4
+area = 16.0
+speed = 640.0
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"pierce"])
+upgrade_values = PackedFloat32Array(0.25, 1, 0.08, 0.12, 1)

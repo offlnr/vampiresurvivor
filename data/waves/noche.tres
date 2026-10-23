@@ -1,0 +1,106 @@
+[gd_resource type="Resource" script_class="WaveTable" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wave_entry.gd" id="1_d2jwl"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="2_rwx2n"]
+[ext_resource type="Resource" path="res://data/enemies/murcielago.tres" id="3_ppqn4"]
+[ext_resource type="Resource" path="res://data/enemies/zombi.tres" id="4_f8f0k"]
+[ext_resource type="Resource" path="res://data/enemies/esqueleto.tres" id="5_lpfu1"]
+[ext_resource type="Resource" path="res://data/enemies/calabaza_explosiva.tres" id="6_gyp0e"]
+[ext_resource type="Resource" path="res://data/enemies/fantasma.tres" id="7_4kdpt"]
+[ext_resource type="Resource" path="res://data/enemies/bruja.tres" id="8_kcoxw"]
+[ext_resource type="Resource" path="res://data/enemies/golem.tres" id="9_6lh88"]
+[ext_resource type="Script" path="res://scripts/data/wave_table.gd" id="10_sk25e"]
+
+[sub_resource type="Resource" id="Resource_geseo"]
+script = ExtResource("1_d2jwl")
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k")])
+weights = PackedFloat32Array(1.5, 1)
+spawn_interval = 1.1
+max_alive = 15
+speed_multiplier = 0.72
+
+[sub_resource type="Resource" id="Resource_p0xjr"]
+script = ExtResource("1_d2jwl")
+start_time = 30.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k")])
+weights = PackedFloat32Array(1.5, 1)
+spawn_interval = 0.95
+max_alive = 25
+health_multiplier = 1.1
+speed_multiplier = 0.72
+
+[sub_resource type="Resource" id="Resource_csm4x"]
+script = ExtResource("1_d2jwl")
+start_time = 60.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k")])
+weights = PackedFloat32Array(1.3, 1)
+spawn_interval = 0.75
+max_alive = 42
+health_multiplier = 1.4
+speed_multiplier = 0.8
+
+[sub_resource type="Resource" id="Resource_btlpw"]
+script = ExtResource("1_d2jwl")
+start_time = 120.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k"), ExtResource("5_lpfu1")])
+weights = PackedFloat32Array(1.2, 1, 0.6)
+spawn_interval = 0.62
+spawn_batch = 3
+max_alive = 72
+health_multiplier = 1.65
+speed_multiplier = 0.88
+
+[sub_resource type="Resource" id="Resource_mhskw"]
+script = ExtResource("1_d2jwl")
+start_time = 180.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k"), ExtResource("5_lpfu1"), ExtResource("6_gyp0e")])
+weights = PackedFloat32Array(1, 1.2, 1, 0.4)
+spawn_interval = 0.5
+spawn_batch = 3
+max_alive = 120
+health_multiplier = 2.2
+speed_multiplier = 0.95
+
+[sub_resource type="Resource" id="Resource_kr2pk"]
+script = ExtResource("1_d2jwl")
+start_time = 300.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k"), ExtResource("5_lpfu1"), ExtResource("6_gyp0e"), ExtResource("7_4kdpt")])
+weights = PackedFloat32Array(1.2, 1.2, 1, 0.5, 1)
+spawn_interval = 0.42
+spawn_batch = 4
+max_alive = 175
+health_multiplier = 2.8
+
+[sub_resource type="Resource" id="Resource_db68s"]
+script = ExtResource("1_d2jwl")
+start_time = 360.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k"), ExtResource("5_lpfu1"), ExtResource("6_gyp0e"), ExtResource("7_4kdpt"), ExtResource("8_kcoxw")])
+weights = PackedFloat32Array(1, 1, 1, 0.5, 1, 0.35)
+spawn_interval = 0.38
+spawn_batch = 4
+max_alive = 210
+health_multiplier = 3.5
+
+[sub_resource type="Resource" id="Resource_o715w"]
+script = ExtResource("1_d2jwl")
+start_time = 420.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k"), ExtResource("5_lpfu1"), ExtResource("6_gyp0e"), ExtResource("7_4kdpt"), ExtResource("8_kcoxw"), ExtResource("9_6lh88")])
+weights = PackedFloat32Array(1, 1, 1, 0.6, 1.5, 0.5, 0.15)
+spawn_interval = 0.32
+spawn_batch = 5
+max_alive = 255
+health_multiplier = 4.5
+
+[sub_resource type="Resource" id="Resource_y632u"]
+script = ExtResource("1_d2jwl")
+start_time = 540.0
+enemies = Array[ExtResource("2_rwx2n")]([ExtResource("3_ppqn4"), ExtResource("4_f8f0k"), ExtResource("5_lpfu1"), ExtResource("6_gyp0e"), ExtResource("7_4kdpt"), ExtResource("8_kcoxw"), ExtResource("9_6lh88")])
+weights = PackedFloat32Array(1, 1, 1.2, 0.7, 2, 0.6, 0.25)
+spawn_interval = 0.26
+spawn_batch = 6
+max_alive = 310
+health_multiplier = 5.8
+
+[resource]
+script = ExtResource("10_sk25e")
+entries = Array[ExtResource("1_d2jwl")]([SubResource("Resource_geseo"), SubResource("Resource_p0xjr"), SubResource("Resource_csm4x"), SubResource("Resource_btlpw"), SubResource("Resource_mhskw"), SubResource("Resource_kr2pk"), SubResource("Resource_db68s"), SubResource("Resource_o715w"), SubResource("Resource_y632u")])

@@ -1,0 +1,245 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/hud.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/placeholder/icon_skull.svg" id="2_skull"]
+[ext_resource type="Texture2D" path="res://art/placeholder/coin.svg" id="3_coin"]
+[ext_resource type="Script" path="res://scenes/ui/minimap.gd" id="4_minimap"]
+[ext_resource type="Texture2D" path="res://art/placeholder/icon_heart.svg" id="5_heart"]
+[ext_resource type="Texture2D" path="res://art/placeholder/soul.svg" id="6_soul"]
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Layout" type="Control" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TopLeft" type="VBoxContainer" parent="Margin/Layout"]
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 200.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="HealthRow" type="HBoxContainer" parent="Margin/Layout/TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Heart" type="TextureRect" parent="Margin/Layout/TopLeft/HealthRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("5_heart")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HealthBar" type="ProgressBar" parent="Margin/Layout/TopLeft/HealthRow"]
+custom_minimum_size = Vector2(220, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+value = 100.0
+show_percentage = false
+
+[node name="HealthText" type="Label" parent="Margin/Layout/TopLeft/HealthRow/HealthBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WeaponIcons" type="HBoxContainer" parent="Margin/Layout/TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="PassiveIcons" type="HBoxContainer" parent="Margin/Layout/TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="BuffIcons" type="HBoxContainer" parent="Margin/Layout/TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="TimeBadge" type="PanelContainer" parent="Margin/Layout"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -70.0
+offset_right = 70.0
+offset_bottom = 56.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="TimeLabel" type="Label" parent="Margin/Layout/TimeBadge"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
+theme_override_font_sizes/font_size = 38
+text = "00:00"
+horizontal_alignment = 1
+
+[node name="TopRight" type="VBoxContainer" parent="Margin/Layout"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_bottom = 260.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Minimap" type="Control" parent="Margin/Layout/TopRight"]
+modulate = Color(1, 1, 1, 0.92)
+custom_minimum_size = Vector2(152, 152)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("4_minimap")
+
+[node name="Stats" type="HBoxContainer" parent="Margin/Layout/TopRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="CoinIcon" type="TextureRect" parent="Margin/Layout/TopRight/Stats"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_coin")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldLabel" type="Label" parent="Margin/Layout/TopRight/Stats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
+theme_override_font_sizes/font_size = 22
+text = "0"
+
+[node name="Gap" type="Control" parent="Margin/Layout/TopRight/Stats"]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="SkullIcon" type="TextureRect" parent="Margin/Layout/TopRight/Stats"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_skull")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="KillsLabel" type="Label" parent="Margin/Layout/TopRight/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "0"
+
+[node name="PauseButton" type="Button" parent="Margin/Layout/TopRight"]
+custom_minimum_size = Vector2(64, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+text = "II"
+
+[node name="ItemIcons" type="HFlowContainer" parent="Margin/Layout"]
+layout_mode = 1
+anchor_left = 0.1
+anchor_top = 1.0
+anchor_right = 0.9
+anchor_bottom = 1.0
+offset_top = -78.0
+offset_bottom = -42.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+alignment = 1
+alignment = 1
+
+[node name="XPBar" type="ProgressBar" parent="Margin/Layout"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+max_value = 5.0
+show_percentage = false
+
+[node name="Soul" type="TextureRect" parent="Margin/Layout/XPBar"]
+modulate = Color(0.545, 0.878, 0.306, 1)
+layout_mode = 0
+offset_left = 6.0
+offset_top = 3.0
+offset_right = 28.0
+offset_bottom = 25.0
+mouse_filter = 2
+texture = ExtResource("6_soul")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LevelLabel" type="Label" parent="Margin/Layout/XPBar"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_right = -10.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Nv 1"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Banner" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -190.0
+offset_bottom = -90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 44
+text = "¡Se acerca una horda!"
+horizontal_alignment = 1
+vertical_alignment = 1
+

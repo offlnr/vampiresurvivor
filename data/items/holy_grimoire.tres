@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/holy_grimoire.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"holy_grimoire"
+display_name = "Libro sagrado"
+icon = ExtResource("1_icon")
+rarity = 4
+effect = 24
+value = 100.0
+percent = false
+description = "+{value} de vida máxima y +1 de vida por segundo."

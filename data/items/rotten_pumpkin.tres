@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/rotten_pumpkin.svg" id="1_57skm"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_5c2kp"]
+
+[resource]
+script = ExtResource("2_5c2kp")
+id = &"rotten_pumpkin"
+display_name = "Calabaza podrida"
+icon = ExtResource("1_57skm")
+value = 0.15
+description = "{value} % de probabilidad de envenenar al golpear: el veneno quita el 60 % del golpe en 3 s."

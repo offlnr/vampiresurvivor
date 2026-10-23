@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="SpriteFrames" path="res://art/placeholder/bat/bat_frames.tres" id="1_g4po1"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="2_wosco"]
+
+[resource]
+script = ExtResource("2_wosco")
+id = &"bat"
+display_name = "Murciélago"
+frames = ExtResource("1_g4po1")
+visual_height = 40.0
+radius = 15.0
+speed = 130.0
+contact_damage = 6.0
+xp_value = 2
+spawn_style = 2
+flying = true

@@ -1,0 +1,26 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/witch/fly_0.svg" id="1_nkhhm"]
+[ext_resource type="Texture2D" path="res://art/placeholder/witch/fly_1.svg" id="2_q6xt0"]
+[ext_resource type="Texture2D" path="res://art/placeholder/witch/fly_2.svg" id="3_jh6g2"]
+[ext_resource type="Texture2D" path="res://art/placeholder/witch/fly_3.svg" id="4_hsop0"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_nkhhm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_q6xt0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_jh6g2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_hsop0")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 6.0
+}]

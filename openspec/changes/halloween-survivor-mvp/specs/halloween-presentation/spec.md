@@ -13,12 +13,38 @@ Todo el arte provisional SHALL usar una paleta limitada de Halloween: naranja ca
 - **WHEN** hay más de 100 enemigos, proyectiles y almas en pantalla
 - **THEN** el personaje del jugador se distingue claramente y las almas se distinguen de los enemigos
 
+#### Scenario: Enemigos sobre el fondo
+- **WHEN** un enemigo de cualquier tipo, incluido el murciélago, pasa sobre cualquier zona del suelo
+- **THEN** se distingue claramente del fondo gracias a su color y a un contorno claro
+
 ### Requirement: Arte provisional identificable
 Cada entidad SHALL tener un aspecto provisional que ya sugiera lo que es: silueta de murciélago, zombi, fantasma, calabaza y alma. Cada tipo de enemigo MUST distinguirse por su forma y no solo por el color.
 
 #### Scenario: Distinguir sin color
 - **WHEN** se ve la partida en escala de grises
 - **THEN** los tres tipos de enemigo siguen distinguiéndose por su forma
+
+### Requirement: Animaciones de personajes
+El jugador y cada enemigo SHALL tener animación por fotogramas: caminar o aletear al moverse, y el jugador también en reposo. Los enemigos MUST tener una entrada al aparecer y una muerte visible con efecto.
+
+#### Scenario: Caminar
+- **WHEN** el jugador se mueve
+- **THEN** se reproduce su ciclo de caminar, y al detenerse pasa a la animación de reposo
+
+#### Scenario: Aparición de un zombi
+- **WHEN** aparece un zombi
+- **THEN** surge del suelo con una animación breve antes de perseguir al jugador
+
+### Requirement: Interfaz pixel art
+Toda la interfaz SHALL usar una fuente pixel art con licencia libre (Pixelify Sans, OFL), registrada en los créditos, y paneles y botones de esquinas rectas con borde y sombra en bloque. Las cartas de mejora, de la tienda y de los cofres MUST mostrarse en una lista vertical de cartas compactas (icono a la izquierda, texto a la derecha) en cualquier orientación de pantalla.
+
+#### Scenario: Cartas en vertical
+- **WHEN** se abre la selección de mejora en una pantalla horizontal
+- **THEN** las 3 cartas aparecen una debajo de otra, compactas, con sus botones de volver a tirar y desterrar al lado
+
+#### Scenario: Fuente pixel art
+- **WHEN** se muestra cualquier texto del juego, con acentos y eñes
+- **THEN** usa la fuente pixel art y todos los caracteres se ven bien
 
 ### Requirement: Escenario de fondo
 El suelo del mapa SHALL ser un fondo temático, como un cementerio o un campo de noche, que se repite sin costuras visibles en todas direcciones.

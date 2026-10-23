@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/fate_candle.svg" id="1_l16tb"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_vj8ol"]
+
+[resource]
+script = ExtResource("2_vj8ol")
+id = &"fate_candle"
+display_name = "Vela del destino"
+icon = ExtResource("1_l16tb")
+rarity = 1
+effect = 7
+value = 0.08
+description = "{value} % de probabilidad de golpe crítico (doble de daño)."

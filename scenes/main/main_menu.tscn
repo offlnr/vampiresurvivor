@@ -1,0 +1,149 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/main/main_menu.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/placeholder/ground.svg" id="2_ground"]
+[ext_resource type="Texture2D" path="res://art/placeholder/moon.svg" id="3_moon"]
+[ext_resource type="Texture2D" path="res://art/placeholder/pumpkin.svg" id="4_pumpkin"]
+[ext_resource type="PackedScene" path="res://scenes/ui/options_menu.tscn" id="5_options"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Ground" type="TextureRect" parent="."]
+modulate = Color(0.7, 0.65, 0.85, 1)
+texture_repeat = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_ground")
+stretch_mode = 1
+
+[node name="Sky" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.035, 0.09, 0.55)
+
+[node name="Moon" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -330.0
+offset_top = -30.0
+offset_right = -40.0
+offset_bottom = 260.0
+grow_horizontal = 0
+mouse_filter = 2
+texture = ExtResource("3_moon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Bats" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Pumpkin" type="TextureRect" parent="Center/VBox"]
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+texture = ExtResource("4_pumpkin")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.478, 0.102, 1)
+theme_override_colors/font_outline_color = Color(0.165, 0.102, 0.251, 1)
+theme_override_constants/outline_size = 18
+theme_override_font_sizes/font_size = 92
+text = "NOCHE DE ALMAS"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.651, 0.42, 0.878, 1)
+theme_override_font_sizes/font_size = 28
+text = "¿Cuánto aguantarás la noche?"
+horizontal_alignment = 1
+
+[node name="Record" type="Label" parent="Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/VBox"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+
+[node name="PlayButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(340, 76)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 34
+text = "Jugar"
+
+[node name="OptionsButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(340, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Opciones"
+
+[node name="QuitButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(340, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Salir"
+
+[node name="Footer" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -64.0
+offset_right = -16.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 0.6)
+theme_override_font_sizes/font_size = 18
+text = "Muévete con WASD, flechas, mando o arrastrando el dedo · Las armas atacan solas · v0.1"
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="OptionsMenu" parent="." instance=ExtResource("5_options")]
+layout_mode = 1

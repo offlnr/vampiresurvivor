@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/precision.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"precision"
+display_name = "Pergamino de precisión"
+icon = ExtResource("1_icon")
+description = "+{value} % de probabilidad de crítico (doble daño)."
+stat = 15
+amount_per_level = 0.07

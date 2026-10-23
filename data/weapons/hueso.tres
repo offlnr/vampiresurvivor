@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/bone.svg" id="1_5h3ct"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/boomerang_weapon.tscn" id="2_qxyog"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_mddhj"]
+
+[resource]
+script = ExtResource("3_mddhj")
+id = &"bone"
+display_name = "Hueso"
+icon = ExtResource("1_5h3ct")
+pattern = 4
+scene = ExtResource("2_qxyog")
+description = "Va hacia el enemigo más cercano y vuelve, golpeando a la ida y a la vuelta."
+amount_singular = "hueso"
+amount_plural = "huesos"
+duration_label = "recorrido"
+attack_range = 380.0
+damage = 14.0
+cooldown = 1.6
+area = 38.0
+duration = 0.55
+speed = 560.0
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"duration", &"speed"])
+upgrade_values = PackedFloat32Array(0.25, 1, 0.08, 0.12, 0.1, 0.08)

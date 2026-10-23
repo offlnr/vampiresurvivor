@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/vampire_tooth.svg" id="1_8bgfy"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_do0sv"]
+
+[resource]
+script = ExtResource("2_do0sv")
+id = &"vampire_tooth"
+display_name = "Diente de vampiro"
+icon = ExtResource("1_8bgfy")
+rarity = 1
+effect = 6
+value = 0.005
+description = "Cada enemigo que matas te cura un {value} % de vida."

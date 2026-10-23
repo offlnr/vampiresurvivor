@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define el ciclo completo de una partida (menú, juego, pausa, derrota, victoria y reintento) y la información que el jugador ve en pantalla mientras juega.
+Define el ciclo completo de una partida infinita (menú, juego, pausa, muerte, récord y reintento) y la información que el jugador ve en pantalla mientras juega.
 
 ## ADDED Requirements
 
@@ -13,15 +13,26 @@ Al abrir el juego SHALL mostrarse un menú principal con el título, un botón p
 - **WHEN** el jugador pulsa "Jugar" en el menú principal
 - **THEN** empieza una partida nueva
 
-### Requirement: Temporizador y victoria
-La partida SHALL tener un temporizador que cuenta hacia arriba. Si el jugador sigue vivo a los 10:00, la partida MUST terminar en victoria.
+### Requirement: Partida infinita
+La partida SHALL no tener final: dura hasta que el jugador muere. El temporizador MUST contar hacia arriba sin límite, con horas cuando pase de 60 minutos.
 
-#### Scenario: Sobrevivir
+#### Scenario: Pasar de los 10 minutos
 - **WHEN** el temporizador llega a 10:00 y el jugador sigue vivo
-- **THEN** la partida se detiene y se muestra la pantalla de victoria
+- **THEN** la partida sigue, siguen apareciendo enemigos y hordas, y la dificultad sigue subiendo
+
+#### Scenario: Más de una hora
+- **WHEN** el jugador lleva 1 hora y 5 minutos
+- **THEN** el temporizador muestra "1:05:00"
+
+### Requirement: Récord
+El juego SHALL guardar en el dispositivo el mayor tiempo sobrevivido y mostrarlo en el menú principal y en la pantalla de fin, avisando cuando se bate.
+
+#### Scenario: Nuevo récord
+- **WHEN** el jugador muere tras sobrevivir más que su récord anterior
+- **THEN** la pantalla de fin muestra "¡Nuevo récord!" y el menú principal enseña el nuevo tiempo
 
 ### Requirement: Pantalla de fin de partida
-Al terminar la partida, por derrota o por victoria, SHALL mostrarse una pantalla con el resultado, el tiempo sobrevivido, el nivel alcanzado y las muertes, con botones para reintentar y para volver al menú.
+Al morir el jugador SHALL mostrarse una pantalla con el tiempo sobrevivido, el récord, el nivel alcanzado y las muertes, con botones para reintentar y para volver al menú.
 
 #### Scenario: Reintentar
 - **WHEN** el jugador pulsa "Reintentar" en la pantalla de fin de partida
@@ -43,7 +54,7 @@ El jugador SHALL poder pausar con Esc o P en PC, con un botón en pantalla en m�
 - **THEN** la partida se pausa y se muestra el menú de pausa
 
 ### Requirement: HUD de partida
-Durante la partida el HUD SHALL mostrar la barra de vida, la barra de experiencia con el nivel, el temporizador, el contador de muertes y los iconos de las armas equipadas. MUST quedar legible y sin solaparse en pantallas de móvil verticales y horizontales.
+Durante la partida el HUD SHALL mostrar arriba a la izquierda la vida, las armas, los pergaminos y los efectos activos; arriba en el centro el temporizador; arriba a la derecha el minimapa con el oro y las muertes centrados debajo; abajo en el centro los objetos comprados; y la barra de experiencia con el nivel ocupando todo el borde inferior. MUST quedar legible y sin solaparse en pantallas de móvil verticales y horizontales.
 
 #### Scenario: Actualización del HUD
 - **WHEN** el jugador recibe daño, recoge experiencia o mata a un enemigo

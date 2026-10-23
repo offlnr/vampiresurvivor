@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/cursed_coin.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"cursed_coin"
+display_name = "Moneda maldita"
+icon = ExtResource("1_icon")
+effect = 34
+value = 0.025
+description = "Cada cofre que abres da +{value} % de daño durante el resto de la partida."

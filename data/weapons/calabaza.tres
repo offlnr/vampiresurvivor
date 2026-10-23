@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/pumpkin.svg" id="1_5khpp"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/projectile_weapon.tscn" id="2_lt8sg"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_xpit7"]
+
+[resource]
+script = ExtResource("3_xpit7")
+id = &"pumpkin"
+display_name = "Calabaza"
+icon = ExtResource("1_5khpp")
+scene = ExtResource("2_lt8sg")
+description = "Lanza calabazas al enemigo más cercano."
+amount_singular = "calabaza"
+amount_plural = "calabazas"
+attack_range = 420.0
+damage = 12.0
+area = 34.0
+duration = 1.6
+speed = 430.0
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"speed", &"pierce"])
+upgrade_values = PackedFloat32Array(0.25, 1, 0.1, 0.15, 0.1, 1)

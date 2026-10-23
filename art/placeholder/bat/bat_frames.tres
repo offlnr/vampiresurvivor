@@ -1,0 +1,26 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/bat/fly_0.svg" id="1_q8k75"]
+[ext_resource type="Texture2D" path="res://art/placeholder/bat/fly_1.svg" id="2_i3bfy"]
+[ext_resource type="Texture2D" path="res://art/placeholder/bat/fly_2.svg" id="3_5cut2"]
+[ext_resource type="Texture2D" path="res://art/placeholder/bat/fly_3.svg" id="4_wua0r"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_q8k75")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_i3bfy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_5cut2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_wua0r")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 12.0
+}]

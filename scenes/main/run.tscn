@@ -1,0 +1,91 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource type="Script" path="res://scenes/main/run.gd" id="1_run"]
+[ext_resource type="Texture2D" path="res://art/placeholder/ground.svg" id="2_ground"]
+[ext_resource type="Script" path="res://scenes/main/ground.gd" id="14_ground"]
+[ext_resource type="Resource" path="res://data/enemies/murcielago.tres" id="15_bat"]
+[ext_resource type="Resource" path="res://data/enemies/zombi.tres" id="16_zombie"]
+[ext_resource type="Resource" path="res://data/enemies/fantasma.tres" id="17_ghost"]
+[ext_resource type="Script" path="res://scenes/main/inventory.gd" id="18_inventory"]
+[ext_resource type="Script" path="res://scenes/merchant/merchant_director.gd" id="19_merchants"]
+[ext_resource type="PackedScene" path="res://scenes/ui/shop_menu.tscn" id="20_shop"]
+[ext_resource type="Script" path="res://scenes/pickups/map_chests.gd" id="21_chests"]
+[ext_resource type="Script" path="res://scenes/pickups/cauldrons.gd" id="22_cauldrons"]
+[ext_resource type="Script" path="res://scenes/main/decorations.gd" id="23_decorations"]
+[ext_resource type="Script" path="res://scenes/pickups/pickup_manager.gd" id="3_pickups"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="4_player"]
+[ext_resource type="Script" path="res://scenes/enemies/enemy_manager.gd" id="5_enemies"]
+[ext_resource type="Resource" path="res://data/waves/noche.tres" id="6_waves"]
+[ext_resource type="PackedScene" path="res://scenes/effects/effects.tscn" id="7_effects"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="8_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/virtual_joystick.tscn" id="9_joystick"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="10_level_up"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="11_pause"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="12_game_over"]
+[ext_resource type="PackedScene" path="res://scenes/ui/debug_overlay.tscn" id="13_debug"]
+
+[node name="Run" type="Node2D"]
+script = ExtResource("1_run")
+
+[node name="Ground" type="Sprite2D" parent="."]
+modulate = Color(0.72, 0.7, 0.8, 1)
+z_index = -10
+texture = ExtResource("2_ground")
+script = ExtResource("14_ground")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Souls" type="Node2D" parent="World"]
+script = ExtResource("3_pickups")
+
+[node name="Actors" type="Node2D" parent="World"]
+y_sort_enabled = true
+
+[node name="Decorations" type="Node2D" parent="World/Actors"]
+y_sort_enabled = true
+script = ExtResource("23_decorations")
+
+[node name="Player" parent="World/Actors" instance=ExtResource("4_player")]
+
+[node name="Enemies" type="Node2D" parent="World/Actors"]
+y_sort_enabled = true
+script = ExtResource("5_enemies")
+wave_table = ExtResource("6_waves")
+bat = ExtResource("15_bat")
+zombie = ExtResource("16_zombie")
+ghost = ExtResource("17_ghost")
+
+[node name="Merchants" type="Node2D" parent="World/Actors"]
+y_sort_enabled = true
+script = ExtResource("19_merchants")
+
+[node name="MapChests" type="Node2D" parent="World/Actors"]
+y_sort_enabled = true
+script = ExtResource("21_chests")
+
+[node name="Cauldrons" type="Node2D" parent="World/Actors"]
+y_sort_enabled = true
+script = ExtResource("22_cauldrons")
+
+[node name="Projectiles" type="Node2D" parent="World"]
+
+[node name="Inventory" type="Node2D" parent="World"]
+script = ExtResource("18_inventory")
+
+[node name="Effects" parent="World" instance=ExtResource("7_effects")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="UI" instance=ExtResource("8_hud")]
+
+[node name="VirtualJoystick" parent="UI" instance=ExtResource("9_joystick")]
+
+[node name="LevelUp" parent="UI" instance=ExtResource("10_level_up")]
+
+[node name="ShopMenu" parent="UI" instance=ExtResource("20_shop")]
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("11_pause")]
+
+[node name="GameOver" parent="UI" instance=ExtResource("12_game_over")]
+
+[node name="DebugOverlay" parent="UI" instance=ExtResource("13_debug")]

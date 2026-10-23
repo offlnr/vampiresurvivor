@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/maldito.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"maldito"
+display_name = "Pergamino maldito"
+icon = ExtResource("1_icon")
+description = "+{value} % de dificultad (más enemigos y más fuertes), a cambio del doble en experiencia y oro."
+stat = 20
+amount_per_level = 0.05

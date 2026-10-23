@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/lightning.svg" id="1_icon"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/chain_weapon.tscn" id="2_scene"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_script"]
+
+[resource]
+script = ExtResource("3_script")
+id = &"lightning"
+display_name = "Rayo espectral"
+icon = ExtResource("1_icon")
+pattern = 6
+scene = ExtResource("2_scene")
+description = "Rayos que caen sobre enemigos cercanos y saltan de uno a otro."
+amount_singular = "rayo"
+amount_plural = "rayos"
+area_label = "alcance de los saltos"
+pierce_label = "salta a"
+attack_range = 400.0
+damage = 13.0
+cooldown = 1.4
+area = 130.0
+pierce = 2
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"pierce"])
+upgrade_values = PackedFloat32Array(0.25, 1, 0.08, 0.15, 1)

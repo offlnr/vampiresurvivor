@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/skull_candy.svg" id="1_cr822"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_ro7sr"]
+
+[resource]
+script = ExtResource("2_ro7sr")
+id = &"skull_candy"
+display_name = "Caramelo de calavera"
+icon = ExtResource("1_cr822")
+effect = 1
+value = 0.03
+description = "{value} % de soltar un caramelo que cura un 10 % de vida."

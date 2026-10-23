@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="SpriteFrames" path="res://art/placeholder/witch/witch_frames.tres" id="1_pljfk"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="2_k2lcb"]
+
+[resource]
+script = ExtResource("2_k2lcb")
+id = &"witch"
+display_name = "Bruja"
+frames = ExtResource("1_pljfk")
+visual_height = 64.0
+radius = 18.0
+max_health = 45.0
+contact_damage = 8.0
+xp_value = 6
+gold_chance = 0.4
+spawn_style = 1
+behavior = 2
+attack_damage = 10.0
+attack_range = 300.0
+attack_cooldown = 2.6
+projectile_speed = 230.0

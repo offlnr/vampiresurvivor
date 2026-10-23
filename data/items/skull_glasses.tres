@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/skull_glasses.svg" id="1_yrmv8"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_6bsjd"]
+
+[resource]
+script = ExtResource("2_6bsjd")
+id = &"skull_glasses"
+display_name = "Lentes de calavera"
+icon = ExtResource("1_yrmv8")
+rarity = 3
+effect = 11
+value = 0.4
+description = "Hasta +{value} % de daño cuanta menos vida te queda."

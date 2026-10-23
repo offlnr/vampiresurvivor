@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/pumpkin_projectile.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/placeholder/pumpkin.svg" id="2_pumpkin"]
+
+[node name="PumpkinProjectile" type="Node2D"]
+z_index = 5
+script = ExtResource("1_script")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_pumpkin")

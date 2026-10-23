@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/elf_shoes.svg" id="1_82rpi"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_2fiu0"]
+
+[resource]
+script = ExtResource("2_2fiu0")
+id = &"elf_shoes"
+display_name = "Zapatos de duende"
+icon = ExtResource("1_82rpi")
+rarity = 1
+effect = 5
+description = "+{value} % de velocidad de movimiento."

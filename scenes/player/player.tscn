@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/player/player.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://art/placeholder/player/player_frames.tres" id="2_frames"]
+[ext_resource type="Texture2D" path="res://art/placeholder/shadow.svg" id="3_shadow"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 16.0
+
+[node name="Player" type="CharacterBody2D"]
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_script")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+position = Vector2(0, 32)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("3_shadow")
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
+sprite_frames = ExtResource("2_frames")
+animation = &"idle"
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Weapons" type="Node2D" parent="."]
+
+[node name="Camera" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0

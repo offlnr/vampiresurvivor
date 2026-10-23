@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/demonic_soul.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"demonic_soul"
+display_name = "Alma demoníaca"
+icon = ExtResource("1_icon")
+rarity = 3
+effect = 35
+value = 0.001
+description = "Cada enemigo que matas da +{value} % de daño durante la partida (máximo +100 %)."

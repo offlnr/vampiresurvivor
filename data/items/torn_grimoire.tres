@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/torn_grimoire.svg" id="1_yyv83"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_mi58j"]
+
+[resource]
+script = ExtResource("2_mi58j")
+id = &"torn_grimoire"
+display_name = "Grimorio hecho trizas"
+icon = ExtResource("1_yyv83")
+rarity = 3
+effect = 12
+value = 0.5
+description = "Las almas que atraes hacen el {value} % del daño de tu mejor arma a quien atraviesan."

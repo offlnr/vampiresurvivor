@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/bone_knuckles.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"bone_knuckles"
+display_name = "Nudilleras de hueso"
+icon = ExtResource("1_icon")
+rarity = 2
+effect = 29
+value = 0.2
+description = "+{value} % de daño a los enemigos cercanos (a menos de 150)."

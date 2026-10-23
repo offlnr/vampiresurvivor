@@ -55,7 +55,7 @@ El personaje SHALL tener vida máxima y vida actual. Al tocar a un enemigo pierd
 
 #### Scenario: Recibir daño
 - **WHEN** un enemigo toca al personaje y este no está invulnerable
-- **THEN** la vida actual baja según el daño del enemigo y el personaje parpadea durante el tiempo de invulnerabilidad
+- **THEN** la vida actual baja según el daño del enemigo menos la armadura del jugador, y el personaje parpadea durante el tiempo de invulnerabilidad
 
 #### Scenario: Invulnerabilidad temporal
 - **WHEN** un segundo enemigo lo toca durante el tiempo de invulnerabilidad

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="SpriteFrames" path="res://art/placeholder/ghost/ghost_frames.tres" id="1_xqyb1"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="2_lr1ab"]
+
+[resource]
+script = ExtResource("2_lr1ab")
+id = &"ghost"
+display_name = "Fantasma"
+frames = ExtResource("1_xqyb1")
+visual_height = 64.0
+radius = 21.0
+speed = 92.0
+max_health = 60.0
+contact_damage = 14.0
+xp_value = 6
+gold_chance = 0.35
+tint = Color(1, 1, 1, 0.92)
+spawn_style = 1
+flying = true
+floaty = true

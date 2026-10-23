@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/plata.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"plata"
+display_name = "Pergamino de plata"
+icon = ExtResource("1_icon")
+description = "+{value} % de plata al terminar la partida (sirve para desbloquear cosas)."
+stat = 22
+amount_per_level = 0.12

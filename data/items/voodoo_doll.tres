@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/voodoo_doll.svg" id="1_vdcq6"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_dg2pr"]
+
+[resource]
+script = ExtResource("2_dg2pr")
+id = &"voodoo_doll"
+display_name = "Muñeco vudú"
+icon = ExtResource("1_vdcq6")
+rarity = 1
+effect = 4
+value = 1.0
+percent = false
+description = "Cada 2 s maldice a 2 enemigos cercanos (+{value} por copia) con el 100 % del daño de tu mejor arma."

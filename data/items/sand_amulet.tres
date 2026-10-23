@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/sand_amulet.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"sand_amulet"
+display_name = "Amuleto de arena"
+icon = ExtResource("1_icon")
+effect = 18
+value = 0.08
+description = "+{value} % de experiencia."

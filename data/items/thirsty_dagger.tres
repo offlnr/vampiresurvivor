@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/thirsty_dagger.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"thirsty_dagger"
+display_name = "Daga sedienta"
+icon = ExtResource("1_icon")
+rarity = 2
+effect = 32
+value = 0.25
+description = "Cada crítico tiene un {value} % de probabilidad de curarte un 1 % de vida."

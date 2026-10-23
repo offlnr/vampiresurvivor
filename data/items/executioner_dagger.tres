@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/executioner_dagger.svg" id="1_4pekw"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_jydj2"]
+
+[resource]
+script = ExtResource("2_jydj2")
+id = &"executioner_dagger"
+display_name = "Daga del verdugo"
+icon = ExtResource("1_4pekw")
+rarity = 4
+effect = 13
+value = 0.01
+description = "{value} % de probabilidad de ejecutar a un enemigo normal; cada ejecución da +1 % de daño."

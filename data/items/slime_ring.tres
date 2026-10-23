@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/slime_ring.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"slime_ring"
+display_name = "Anillo de baba"
+icon = ExtResource("1_icon")
+effect = 22
+value = 0.15
+description = "+{value} % de evasión (cuanta más tienes, menos aporta)."

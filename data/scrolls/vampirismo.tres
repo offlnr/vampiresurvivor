@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/vampirismo.svg" id="1_snwjk"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_6y0il"]
+
+[resource]
+script = ExtResource("2_6y0il")
+id = &"vampirismo"
+display_name = "Pergamino de vampirismo"
+icon = ExtResource("1_snwjk")
+description = "+{value} % de robo de vida."
+stat = 6
+amount_per_level = 0.01

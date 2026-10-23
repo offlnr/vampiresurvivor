@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/fire_zone.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/placeholder/fire_zone.svg" id="2_zone"]
+[ext_resource type="Texture2D" path="res://art/placeholder/wisp.svg" id="3_wisp"]
+
+[node name="FireZone" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Ground" type="Sprite2D" parent="."]
+z_index = -2
+texture = ExtResource("2_zone")
+
+[node name="Flame" type="Sprite2D" parent="."]
+z_index = 6
+texture = ExtResource("3_wisp")

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/cursed_pocket_watch.svg" id="1_x0rgy"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_8wksj"]
+
+[resource]
+script = ExtResource("2_8wksj")
+id = &"cursed_pocket_watch"
+display_name = "Reloj de bolsillo maldito"
+icon = ExtResource("1_x0rgy")
+rarity = 3
+effect = 15
+value = 0.15
+description = "+{value} % de velocidad de ataque."

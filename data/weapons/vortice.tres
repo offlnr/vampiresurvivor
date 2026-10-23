@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/vortex.svg" id="1_icon"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/vortex_weapon.tscn" id="2_scene"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_script"]
+
+[resource]
+script = ExtResource("3_script")
+id = &"vortex"
+display_name = "Vórtice de almas"
+icon = ExtResource("1_icon")
+pattern = 8
+scene = ExtResource("2_scene")
+description = "Abre un remolino sobre los enemigos que los atrae hacia su centro y los daña."
+amount_singular = "vórtice"
+amount_plural = "vórtices"
+area_label = "radio"
+attack_range = 380.0
+damage = 7.0
+cooldown = 4.5
+area = 95.0
+duration = 2.5
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"duration"])
+upgrade_values = PackedFloat32Array(0.3, 1, 0.08, 0.13, 0.12)

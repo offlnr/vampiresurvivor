@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/magic_orb.svg" id="1_orb"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/magic_orb_weapon.tscn" id="2_scene"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_script"]
+
+[resource]
+script = ExtResource("3_script")
+id = &"magic_orb"
+display_name = "Orbe arcano"
+icon = ExtResource("1_orb")
+scene = ExtResource("2_scene")
+description = "Dispara orbes de magia morada al enemigo más cercano."
+amount_singular = "orbe"
+amount_plural = "orbes"
+attack_range = 440.0
+damage = 11.0
+cooldown = 0.85
+area = 30.0
+speed = 520.0
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"speed", &"pierce"])
+upgrade_values = PackedFloat32Array(0.25, 1, 0.1, 0.15, 0.1, 1)

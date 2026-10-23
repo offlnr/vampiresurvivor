@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/bat_ally.svg" id="1_qkyvu"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/orbit_weapon.tscn" id="2_rwwm5"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_h1lo2"]
+
+[resource]
+script = ExtResource("3_h1lo2")
+id = &"bats"
+display_name = "Murciélagos"
+icon = ExtResource("1_qkyvu")
+pattern = 1
+scene = ExtResource("2_rwwm5")
+description = "Murciélagos que giran a tu alrededor y muerden al pasar."
+amount_singular = "murciélago"
+amount_plural = "murciélagos"
+area_label = "radio de giro"
+duration_label = "tiempo girando"
+damage = 8.0
+cooldown = 3.0
+amount = 2
+area = 100.0
+duration = 3.0
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area", &"duration"])
+upgrade_values = PackedFloat32Array(0.25, 1, 0.12, 0.1, 0.15)

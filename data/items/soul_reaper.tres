@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/soul_reaper.svg" id="1_ishdr"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_rqkqr"]
+
+[resource]
+script = ExtResource("2_rqkqr")
+id = &"soul_reaper"
+display_name = "Cosechador de almas"
+icon = ExtResource("1_ishdr")
+rarity = 4
+effect = 14
+value = 0.2
+description = "{value} % de probabilidad de que cada muerte libere un espíritu que hace el 150 % del daño de tu mejor arma."

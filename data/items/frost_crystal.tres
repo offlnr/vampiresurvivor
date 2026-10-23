@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/frost_crystal.svg" id="1_ytgj3"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_e8frg"]
+
+[resource]
+script = ExtResource("2_e8frg")
+id = &"frost_crystal"
+display_name = "Cristal de escarcha"
+icon = ExtResource("1_ytgj3")
+effect = 2
+value = 0.06
+description = "{value} % de probabilidad de congelar al golpear durante 1,5 s."

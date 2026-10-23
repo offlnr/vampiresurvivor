@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/coward_cloak.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"coward_cloak"
+display_name = "Capa del cobarde"
+icon = ExtResource("1_icon")
+effect = 37
+value = 0.05
+description = "+{value} % de velocidad de movimiento; al recibir daño, +30 % más durante 2 s."

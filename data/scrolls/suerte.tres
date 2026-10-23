@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/suerte.svg" id="1_pahnn"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_3cnhy"]
+
+[resource]
+script = ExtResource("2_3cnhy")
+id = &"suerte"
+display_name = "Pergamino de suerte"
+icon = ExtResource("1_pahnn")
+description = "+{value} % de suerte."
+stat = 5
+amount_per_level = 0.15

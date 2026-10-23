@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scrolls/dano.svg" id="1_clerd"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_7ciy6"]
+
+[resource]
+script = ExtResource("2_7ciy6")
+id = &"dano"
+display_name = "Pergamino de daño"
+icon = ExtResource("1_clerd")
+description = "+{value} % de daño."
+stat = 4
+amount_per_level = 0.08

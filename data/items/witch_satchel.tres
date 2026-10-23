@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/witch_satchel.svg" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"witch_satchel"
+display_name = "Morral de bruja"
+icon = ExtResource("1_icon")
+rarity = 2
+effect = 23
+value = 1.0
+percent = false
+description = "+{value} proyectil en todas las armas."

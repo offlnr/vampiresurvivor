@@ -1,0 +1,39 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/player/idle_0.svg" id="1_m8gsy"]
+[ext_resource type="Texture2D" path="res://art/placeholder/player/idle_1.svg" id="2_fiiai"]
+[ext_resource type="Texture2D" path="res://art/placeholder/player/walk_0.svg" id="3_58o1o"]
+[ext_resource type="Texture2D" path="res://art/placeholder/player/walk_1.svg" id="4_6576g"]
+[ext_resource type="Texture2D" path="res://art/placeholder/player/walk_2.svg" id="5_mf5td"]
+[ext_resource type="Texture2D" path="res://art/placeholder/player/walk_3.svg" id="6_hjdue"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_m8gsy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_fiiai")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 2.5
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_58o1o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_6576g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_mf5td")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_hjdue")
+}],
+"loop": 1,
+"name": &"walk",
+"speed": 9.0
+}]

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/scythe.svg" id="1_u2obx"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/sweep_weapon.tscn" id="2_h0u4k"]
+[ext_resource type="Script" path="res://scripts/data/weapon_data.gd" id="3_05uk7"]
+
+[resource]
+script = ExtResource("3_05uk7")
+id = &"scythe"
+display_name = "Guadaña"
+icon = ExtResource("1_u2obx")
+pattern = 3
+scene = ExtResource("2_h0u4k")
+description = "Un tajo en arco hacia el enemigo más cercano."
+amount_singular = "tajo hacia atrás"
+amount_plural = "tajos"
+area_label = "alcance"
+damage = 16.0
+cooldown = 1.5
+area = 105.0
+upgrade_stats = Array[StringName]([&"damage", &"amount", &"attack_speed", &"area"])
+upgrade_values = PackedFloat32Array(0.25, 1, 0.08, 0.1)

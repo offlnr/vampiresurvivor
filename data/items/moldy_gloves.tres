@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/moldy_gloves.svg" id="1_etq3p"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_frpnp"]
+
+[resource]
+script = ExtResource("2_frpnp")
+id = &"moldy_gloves"
+display_name = "Guantes mohosos"
+icon = ExtResource("1_etq3p")
+rarity = 2
+effect = 9
+value = 0.06
+description = "{value} % de probabilidad de soltar una nube que envenena a los enemigos en 85 de radio."

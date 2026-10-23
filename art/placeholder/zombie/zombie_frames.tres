@@ -1,0 +1,26 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/zombie/walk_0.svg" id="1_xae08"]
+[ext_resource type="Texture2D" path="res://art/placeholder/zombie/walk_1.svg" id="2_xomky"]
+[ext_resource type="Texture2D" path="res://art/placeholder/zombie/walk_2.svg" id="3_p431n"]
+[ext_resource type="Texture2D" path="res://art/placeholder/zombie/walk_3.svg" id="4_mhp2w"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_xae08")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_xomky")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_p431n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mhp2w")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 6.0
+}]

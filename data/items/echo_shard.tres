@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/items/echo_shard.svg" id="1_bhhje"]
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="2_rodwl"]
+
+[resource]
+script = ExtResource("2_rodwl")
+id = &"echo_shard"
+display_name = "Fragmento de eco"
+icon = ExtResource("1_bhhje")
+rarity = 2
+effect = 8
+description = "{value} % de probabilidad de que un golpe se repita."
