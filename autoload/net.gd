@@ -34,8 +34,9 @@ const MSG_ACTION := 6
 const MSG_UNLOCKS := 7
 
 const CONFIG_PATH := "user://net.cfg"
-## Local relay for testing (`node server/relay.js`). Online builds need a wss:// address.
-const DEFAULT_SERVER := "ws://localhost:8080"
+## The room server on Render (see server/README.md). For local tests: ws://localhost:8080
+## (`node server/relay.js`), typed in the "Servidor" field.
+const DEFAULT_SERVER := "wss://noche-de-almas-relay.onrender.com"
 ## Snapshots can be tens of KB; the default 64 KB buffers are too tight.
 const BUFFER_SIZE := 1 << 21
 ## Free hosting plans put the server to sleep when nobody uses it; waking it up can take most of a minute.

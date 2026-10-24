@@ -4,7 +4,9 @@
 
 - [x] 1.1 `server/relay.js`: salas con código de 4 caracteres, reenvío binario, avisos de entrada y salida, ping y cierre de conexiones mudas
 - [x] 1.2 `render.yaml` y `server/README.md` con cómo probarlo en local y publicarlo en Render
-- [ ] 1.3 Publicar el servidor en Render y poner su dirección `wss://` en `DEFAULT_SERVER` (`autoload/net.gd`)
+- [x] 1.3 Publicar el servidor en Render (`https://noche-de-almas-relay.onrender.com`) y poner su dirección `wss://` en `DEFAULT_SERVER` (`autoload/net.gd`)
+- [x] 1.4 Verificar con anfitrión e invitado reales (headless) a través del servidor de Render: sala, subida de nivel, compras y cofres
+- [x] 1.5 Exportar el ejecutable de Windows con el servidor por defecto y comprobar que arranca sin errores
 
 ## 2. Conexión y sala (specs/online-coop, specs/run-session)
 
