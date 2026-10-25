@@ -39,6 +39,8 @@ var _unit_ids := {}
 var _next_unit_id := 1
 var _sounds: Array = []
 var _events: Array = []
+## Number of the last input the guest sent, echoed back so the guest can predict its own movement.
+var _guest_input := 0
 
 
 func setup(owner_run: Node, guest_player: Player) -> void:
@@ -80,6 +82,8 @@ func _on_message(message: Array) -> void:
 			if is_instance_valid(guest):
 				guest.remote_direction = message[1]
 			guest_view_half = message[2]
+			if message.size() > 3:
+				_guest_input = message[3]
 		Net.MSG_QUIT:
 			run.on_guest_left()
 		Net.MSG_ACTION:
@@ -135,7 +139,11 @@ func _header(center: Vector2) -> Dictionary:
 		for item: ItemData in seat.inventory.stacks:
 			items.append([String(item.id), seat.inventory.stacks[item]])
 	var alive := is_instance_valid(guest)
+	# The guest moves its own character at once and corrects it with these (see NetGuest).
+	var moving := alive and not guest.is_dead and not get_tree().paused
 	return {
+		self_unit = _unit_ids.get(guest.get_instance_id(), 0) if alive else 0, input = _guest_input,
+		speed = guest.move_speed() if alive else 0.0, moving = moving,
 		resources = _new_resources, seed = _decorations.world_seed, pos = center,
 		time = run.elapsed, level = run.level, xp = run.xp, xp_needed = run.xp_to_next_level(),
 		kills = run.kills, gold = seat.gold if seat != null else 0, difficulty = run.enemy_manager.difficulty - 1.0,

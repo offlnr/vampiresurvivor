@@ -4,13 +4,20 @@ extends Node
 ## decorations (built from the host's seed), the HUD and the menus. This node sends the guest's
 ## move direction to the host and draws each snapshot the host sends back (see NetHost): every
 ## unit becomes a proxy node that slides between its last two positions, so movement stays smooth
-## although snapshots arrive only 20 times a second. The guest's own level-up and item menus open
-## when the host says so, and every choice made in them goes back to the host.
+## although snapshots arrive only 20 times a second. The guest's own character is predicted: it
+## moves here as soon as the guest presses a direction, and each snapshot only corrects it (the
+## host's position plus the inputs it hasn't received yet), so it doesn't lag behind the controls.
+## The guest's own level-up and item menus open when the host says so, and every choice made in
+## them goes back to the host.
 
 const INPUT_RATE := 30.0
 ## A unit that jumps farther than this between snapshots (a pooled node reused) appears there at once.
 const SNAP_DISTANCE := 240.0
 const DISCONNECT_DELAY := 2.5
+## A predicted position this far from the host's is wrong (revived, pushed by a crypt...): it jumps there.
+const PREDICTION_SNAP := 160.0
+## Share of the prediction error corrected per second, so corrections don't show as jumps.
+const CORRECTION_RATE := 8.0
 const OUTLINE_SHADER := preload("res://scenes/enemies/silhouette.gdshader")
 const OUTLINE_COLOR := Color(1, 0.79, 0.24, 1)
 
@@ -42,6 +49,15 @@ var _outline_material: ShaderMaterial
 ## Stats panel sections and owned item counts, as the host last sent them.
 var _stats: Array[Dictionary] = []
 var _item_counts := {}
+## Prediction of the guest's own character: inputs sent and not yet received by the host
+## ([number, direction, seconds it was held]), its unit, speed and predicted position.
+var _input_number := 0
+var _inputs: Array[Array] = []
+var _self_unit := 0
+var _speed := 0.0
+var _predicting := false
+var _predicted := Vector2.ZERO
+var _correction := Vector2.ZERO
 
 
 func setup(owner_run: Node) -> void:
@@ -117,12 +133,24 @@ func _process(delta: float) -> void:
 		_input_left = 1.0 / INPUT_RATE
 		var direction := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
 		var half := _camera_holder.get_viewport_rect().size / _camera_holder.camera.zoom * 0.5
-		Net.send([Net.MSG_INPUT, direction, half])
+		_input_number += 1
+		_inputs.append([_input_number, direction, 0.0])
+		Net.send([Net.MSG_INPUT, direction, half, _input_number])
+	if _predicting and not get_tree().paused and not _inputs.is_empty():
+		# Moves with the last direction sent, as the host will.
+		var current: Array = _inputs.back()
+		current[2] += delta
+		_predicted += (current[1] as Vector2) * _speed * delta
+		var step := _correction * minf(CORRECTION_RATE * delta, 1.0)
+		_predicted += step
+		_correction -= step
+		_predicted = _decorations.push_out(_predicted, Player.BODY_RADIUS)
 	var t := clampf((Time.get_ticks_msec() / 1000.0 - _snapshot_time) * NetHost.SEND_RATE, 0.0, 1.0)
-	for proxy: Proxy in _proxies.values():
-		proxy.position = proxy.from.lerp(proxy.to, t)
+	for id: int in _proxies:
+		var proxy: Proxy = _proxies[id]
+		proxy.position = _predicted if _predicting and id == _self_unit else proxy.from.lerp(proxy.to, t)
 	if _has_snapshot:
-		_camera_holder.global_position = _camera_from.lerp(_camera_to, t)
+		_camera_holder.global_position = _predicted if _predicting else _camera_from.lerp(_camera_to, t)
 
 
 func _on_message(message: Array) -> void:
@@ -266,6 +294,7 @@ func apply_snapshot(raw: PackedByteArray) -> void:
 		_camera_from = _camera_holder.global_position
 		_camera_to = header.pos
 	_snapshot_time = Time.get_ticks_msec() / 1000.0
+	_predict(header)
 	var seen := {}
 	for i in data.get_u32():
 		var id := data.get_u32()
@@ -298,6 +327,36 @@ func apply_snapshot(raw: PackedByteArray) -> void:
 			_proxies[id].queue_free()
 			_proxies.erase(id)
 	_update_hud(header)
+
+
+## Where the guest's character should be now: the host's position plus the inputs the host
+## hadn't received yet. The difference is corrected little by little, or at once when it is large.
+func _predict(header: Dictionary) -> void:
+	_self_unit = header.self_unit
+	_speed = header.speed
+	while not _inputs.is_empty() and _inputs[0][0] <= header.input:
+		_inputs.pop_front()
+	if not header.moving:
+		# Stopped (a menu, the pause, fallen): the host's position as it is.
+		_predicting = false
+		_predicted = header.pos
+		_correction = Vector2.ZERO
+		return
+	var target: Vector2 = header.pos
+	for entry: Array in _inputs:
+		target += (entry[1] as Vector2) * _speed * entry[2]
+	target = _decorations.push_out(target, Player.BODY_RADIUS)
+	if not _predicting or target.distance_to(_predicted) > PREDICTION_SNAP:
+		_predicted = target
+		_correction = Vector2.ZERO
+	else:
+		_correction = target - _predicted
+	_predicting = true
+
+
+## The guest's character as drawn here (predicted), for tests.
+func predicted_position() -> Vector2:
+	return _predicted
 
 
 func proxy_count() -> int:
