@@ -1,14 +1,20 @@
 class_name EnemyManager
 extends Node2D
-## Spawns enemies from the wave table and periodic hordes, moves them towards the player,
+## Spawns enemies from the wave table, periodic hordes and a boss every few minutes, moves them towards the player,
 ## keeps them apart and applies damage. Enemies are found with a spatial grid instead of physics.
 
+## A boss is about to arrive, has arrived, or has been beaten.
+signal boss_warning(title: String)
+signal boss_started(title: String)
+signal boss_defeated(data: EnemyData, position: Vector2)
 signal horde_warning(title: String)
 signal horde_started(title: String)
 
 enum HordeKind { RING, SWARM, CHARGE }
 
 const ENEMY_SCENE := preload("res://scenes/enemies/enemy.tscn")
+## Grid queries reach this far beyond their radius to find enemies whose body overlaps it. Bigger
+## enemies (elite golems, bosses) are kept apart in `_big` and always checked.
 const MAX_ENEMY_RADIUS := 40.0
 ## Never more than this many enemies alive, hordes included.
 const HARD_CAP := 400
@@ -44,6 +50,25 @@ const SWARM_LIFE := 9.0
 const SOURCE_WEAPON := 0
 const SOURCE_ITEM := 1
 const ELITE_COINS := 8
+## A boss arrives every this many seconds (if the last one is dead), announced a few seconds before.
+const BOSS_INTERVAL := 300.0
+const BOSS_WARNING_TIME := 5.0
+const BOSSES: Array[EnemyData] = [
+	preload("res://data/enemies/jefe_golem.tres"),
+	preload("res://data/enemies/jefe_bruja.tres"),
+	preload("res://data/enemies/jefe_calabaza.tres"),
+]
+## Each round of bosses (after the three) has this much more health, on top of the time scaling.
+const BOSS_ROUND_HEALTH := 0.5
+const BOSS_SLAM_TIME := 1.2
+const BOSS_SLAM_RADIUS := 210.0
+const BOSS_RING_POTIONS := 14
+## Each potion of a ring hurts this share of the boss's attack damage (the slam hurts it all).
+const BOSS_RING_DAMAGE := 0.4
+const BOSS_SUMMONS := 7
+const BOSS_COINS := 30
+## Share of a boss's health the bomb power-up takes (elites lose BOMB_ELITE_DAMAGE).
+const BOSS_BOMB_SHARE := 0.04
 
 @export var wave_table: WaveTable
 @export var bat: EnemyData
@@ -79,6 +104,12 @@ var _next_horde_time := FIRST_HORDE_TIME
 var _horde_warned := false
 var _horde_count := 0
 var _potions: Array[Sprite2D] = []
+var _big: Array[Enemy] = []
+## The boss on the map, or null.
+var boss: Enemy
+var _boss_count := 0
+var _next_boss_time := BOSS_INTERVAL
+var _boss_warned := false
 
 
 func _ready() -> void:
@@ -149,13 +180,17 @@ func _physics_process(delta: float) -> void:
 	elif spawning_enabled and any_player_alive():
 		_spawn_tick(delta)
 		_horde_tick()
+		_boss_tick()
 	_relocate_far_enemies()
 
 
 func _rebuild_grid() -> void:
 	grid.clear()
+	_big.clear()
 	for enemy: Enemy in _pool.active:
 		grid.insert(enemy, enemy.position)
+		if enemy.radius > MAX_ENEMY_RADIUS:
+			_big.append(enemy)
 
 
 func _move(delta: float) -> void:
@@ -196,7 +231,9 @@ func _move(delta: float) -> void:
 		if distance < enemy.radius + keep_out:
 			velocity = Vector2.ZERO
 
-		match enemy.data.behavior:
+		if enemy.is_boss:
+			velocity = _boss_act(enemy, delta, velocity)
+		match enemy.data.behavior if not enemy.is_boss else EnemyData.Behavior.CHASE:
 			EnemyData.Behavior.EXPLODER:
 				if distance < enemy.data.attack_range:
 					_explode(enemy)
@@ -247,9 +284,10 @@ func _spawn_tick(delta: float) -> void:
 		spawn(wave.pick_enemy(), offscreen_point(randf() * TAU, spawn_anchor()), health_multiplier())
 
 
-func spawn(enemy_data: EnemyData, pos: Vector2, health_multiplier := 1.0, elite := false, horde := false) -> Enemy:
+func spawn(enemy_data: EnemyData, pos: Vector2, health_multiplier := 1.0, elite := false, horde := false,
+		is_boss := false) -> Enemy:
 	var enemy: Enemy = _pool.acquire()
-	enemy.setup(enemy_data, health_multiplier, elite, speed_multiplier(), damage_multiplier())
+	enemy.setup(enemy_data, health_multiplier, elite, speed_multiplier(), damage_multiplier(), is_boss)
 	enemy.is_horde = horde
 	enemy.position = pos
 	if not horde:
@@ -296,10 +334,88 @@ func start_horde() -> void:
 	_horde_warned = false
 
 
-## Keeps the horde schedule consistent after the run time jumps (debug).
+## Keeps the horde and boss schedules consistent after the run time jumps (debug).
 func sync_horde_clock() -> void:
 	_next_horde_time = _horde_time_after(run_time)
 	_horde_warned = false
+	_next_boss_time = (floorf(run_time / BOSS_INTERVAL) + 1.0) * BOSS_INTERVAL
+	_boss_warned = false
+
+
+# --- Bosses -----------------------------------------------------------------
+
+func next_boss() -> EnemyData:
+	return BOSSES[_boss_count % BOSSES.size()]
+
+
+func _boss_tick() -> void:
+	if boss != null:
+		# The next one waits until this one is beaten.
+		_next_boss_time = maxf(_next_boss_time, run_time + BOSS_WARNING_TIME + 1.0)
+		return
+	if not _boss_warned and run_time >= _next_boss_time - BOSS_WARNING_TIME:
+		_boss_warned = true
+		boss_warning.emit(next_boss().display_name)
+		Audio.play(&"alert", 0.0)
+	if run_time >= _next_boss_time:
+		start_boss()
+
+
+## Brings the next boss now, from just outside the screen. Also used by the debug panel.
+func start_boss() -> void:
+	if boss != null:
+		return
+	var data := next_boss()
+	var round_bonus := 1.0 + BOSS_ROUND_HEALTH * floorf(_boss_count / float(BOSSES.size()))
+	var anchor := spawn_anchor()
+	boss = spawn(data, offscreen_point(randf() * TAU, anchor), health_multiplier() * round_bonus, true, true, true)
+	_boss_count += 1
+	_next_boss_time = (floorf(run_time / BOSS_INTERVAL) + 1.0) * BOSS_INTERVAL
+	_boss_warned = false
+	boss_started.emit(data.display_name)
+
+
+## The boss walks towards the nearest player and, every `attack_cooldown` seconds, uses its next
+## attack. It stands still while charging a slam.
+func _boss_act(enemy: Enemy, delta: float, velocity: Vector2) -> Vector2:
+	if enemy.slam_left > 0.0:
+		if enemy.charge_slam(delta):
+			_slam(enemy)
+		return Vector2.ZERO
+	enemy.attack_left -= delta
+	var attacks := enemy.data.boss_attacks
+	if enemy.attack_left > 0.0 or attacks.is_empty():
+		return velocity
+	enemy.attack_left = enemy.data.attack_cooldown
+	var attack: int = attacks[enemy.boss_attack % attacks.size()]
+	enemy.boss_attack += 1
+	match attack:
+		EnemyData.BossAttack.RING:
+			var start := randf() * TAU
+			for i in BOSS_RING_POTIONS:
+				_throw_potion(enemy, Vector2.from_angle(start + TAU * i / BOSS_RING_POTIONS), BOSS_RING_DAMAGE)
+			Audio.play(&"throw", 0.1)
+		EnemyData.BossAttack.SLAM:
+			enemy.start_slam(BOSS_SLAM_TIME, BOSS_SLAM_RADIUS)
+			Audio.play(&"alert", 0.1, -6.0)
+			return Vector2.ZERO
+		EnemyData.BossAttack.SUMMON:
+			var wave := current_wave()
+			for i in BOSS_SUMMONS:
+				if count() >= HARD_CAP:
+					break
+				var pos := enemy.position + Vector2.from_angle(TAU * i / BOSS_SUMMONS) * (enemy.radius + 60.0)
+				spawn(wave.pick_enemy(), pos, health_multiplier(), false, true)
+				effects.puff(pos, Palette.PURPLE_LIGHT)
+	return velocity
+
+
+func _slam(enemy: Enemy) -> void:
+	effects.shockwave(enemy.position, Palette.RED, enemy.slam_radius / 40.0)
+	Audio.play(&"boom", 0.1)
+	for p in all_players():
+		if enemy.position.distance_to(p.global_position) <= enemy.slam_radius + Player.BODY_RADIUS:
+			p.take_damage(enemy.data.attack_damage * enemy.damage_multiplier)
 
 
 func _horde_time_after(time: float) -> float:
@@ -422,12 +538,17 @@ func contact_damage_at(pos: Vector2, radius: float) -> float:
 func in_radius(pos: Vector2, radius: float) -> Array[Enemy]:
 	var result: Array[Enemy] = []
 	for enemy: Enemy in grid.query(pos, radius + MAX_ENEMY_RADIUS):
-		if not enemy.alive:
-			continue
-		var reach := radius + enemy.radius
-		if enemy.position.distance_squared_to(pos) <= reach * reach:
+		if enemy.alive and enemy.radius <= MAX_ENEMY_RADIUS and _overlaps(enemy, pos, radius):
+			result.append(enemy)
+	for enemy in _big:
+		if enemy.alive and _overlaps(enemy, pos, radius):
 			result.append(enemy)
 	return result
+
+
+static func _overlaps(enemy: Enemy, pos: Vector2, radius: float) -> bool:
+	var reach := radius + enemy.radius
+	return enemy.position.distance_squared_to(pos) <= reach * reach
 
 
 ## Up to `amount` living enemies within `max_distance`, nearest first.
@@ -505,7 +626,9 @@ func stop_time(seconds: float) -> void:
 ## Bomb power-up: kills normal enemies on screen and hurts elites.
 func detonate(elite_fraction: float) -> void:
 	for enemy in on_screen():
-		if enemy.is_elite:
+		if enemy.is_boss:
+			damage(enemy, enemy.max_health * BOSS_BOMB_SHARE, Vector2.ZERO, 0.0, SOURCE_ITEM)
+		elif enemy.is_elite:
 			damage(enemy, enemy.max_health * elite_fraction, Vector2.ZERO, 0.0, SOURCE_ITEM)
 		else:
 			damage(enemy, enemy.health + 1.0, Vector2.ZERO, 0.0, SOURCE_ITEM)
@@ -521,13 +644,13 @@ func _explode(enemy: Enemy) -> void:
 	_kill(enemy)
 
 
-func _throw_potion(enemy: Enemy, direction: Vector2) -> void:
+func _throw_potion(enemy: Enemy, direction: Vector2, damage_share := 1.0) -> void:
 	var potion := Sprite2D.new()
 	potion.texture = POTION_TEXTURE
 	potion.position = enemy.position + Vector2(0, -enemy.radius)
 	potion.z_index = 6
 	potion.set_meta(&"velocity", direction * enemy.data.projectile_speed)
-	potion.set_meta(&"damage", enemy.data.attack_damage * enemy.damage_multiplier)
+	potion.set_meta(&"damage", enemy.data.attack_damage * enemy.damage_multiplier * damage_share)
 	potion.set_meta(&"life", POTION_LIFE)
 	add_child(potion)
 	_potions.append(potion)
@@ -571,7 +694,11 @@ func _kill(enemy: Enemy, items: Inventory = null) -> void:
 		items = inventory
 	effects.death(enemy)
 	pickups.spawn_soul(enemy.position, enemy.xp_value)
-	if enemy.is_elite:
+	if enemy.is_boss:
+		# The reward is a choice for every player (see Run._on_boss_defeated).
+		pickups.spawn_coins(enemy.position, BOSS_COINS)
+		boss_defeated.emit(enemy.data, enemy.position)
+	elif enemy.is_elite:
 		pickups.spawn_chest(enemy.position)
 		pickups.spawn_coins(enemy.position, ELITE_COINS)
 		pickups.spawn_power_up(enemy.position + Vector2(40, 0), PowerUps.roll())
@@ -588,6 +715,8 @@ func _kill(enemy: Enemy, items: Inventory = null) -> void:
 
 
 func _release(enemy: Enemy) -> void:
+	if enemy == boss:
+		boss = null
 	enemy.alive = false
 	if not enemy.is_horde:
 		_normal_alive -= 1

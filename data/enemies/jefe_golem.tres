@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="SpriteFrames" path="res://art/placeholder/golem/golem_frames.tres" id="1_frames"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"boss_golem"
+display_name = "Gólem de la cripta"
+frames = ExtResource("1_frames")
+visual_height = 96.0
+radius = 34.0
+speed = 46.0
+max_health = 1100.0
+contact_damage = 30.0
+xp_value = 150
+gold_chance = 1.0
+tint = Color(0.78, 0.62, 1, 1)
+knockback_immune = true
+attack_damage = 40.0
+attack_cooldown = 3.6
+projectile_speed = 200.0
+boss_attacks = Array[int]([1, 2, 1, 0])

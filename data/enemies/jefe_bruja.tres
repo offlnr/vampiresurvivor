@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="SpriteFrames" path="res://art/placeholder/witch/witch_frames.tres" id="1_frames"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+id = &"boss_witch"
+display_name = "Reina bruja"
+frames = ExtResource("1_frames")
+visual_height = 70.0
+radius = 26.0
+speed = 62.0
+max_health = 950.0
+contact_damage = 24.0
+xp_value = 150
+gold_chance = 1.0
+tint = Color(1, 0.62, 0.8, 1)
+knockback_immune = true
+attack_damage = 26.0
+attack_cooldown = 3.0
+projectile_speed = 210.0
+boss_attacks = Array[int]([0, 2, 0, 1])

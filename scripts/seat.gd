@@ -33,7 +33,7 @@ var chests_total := 0
 var items_bought := 0
 var best_no_hit := 0.0
 
-## Pending upgrade choices, in order: {kind = &"level" | &"chest" | &"shrine", rarity = minimum rarity}.
+## Pending upgrade choices, in order: {kind = &"level" | &"chest" | &"shrine" | &"boss", rarity = minimum rarity}.
 var pending_choices: Array[Dictionary] = []
 ## What this seat's screen shows: &"" (nothing), &"level_up" or &"shop".
 var menu := &""

@@ -5,6 +5,9 @@ extends Resource
 enum SpawnStyle { RISE, FADE, DROP }
 ## CHASE walks into the player; EXPLODER blows up next to them; RANGED keeps its distance and throws potions.
 enum Behavior { CHASE, EXPLODER, RANGED }
+## Boss attacks (see EnemyManager): a ring of potions, a ground slam with a warning circle, and
+## calling minions.
+enum BossAttack { RING, SLAM, SUMMON }
 
 @export var id: StringName
 @export var display_name := ""
@@ -37,6 +40,10 @@ enum Behavior { CHASE, EXPLODER, RANGED }
 @export var attack_range := 0.0
 @export var attack_cooldown := 2.5
 @export var projectile_speed := 220.0
+
+@export_group("Boss")
+## Attacks a boss uses in turn, one every `attack_cooldown` seconds (BossAttack values).
+@export var boss_attacks: Array[int] = []
 
 
 func frame_texture() -> Texture2D:

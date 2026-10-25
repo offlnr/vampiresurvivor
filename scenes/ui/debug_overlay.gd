@@ -27,6 +27,7 @@ func _ready() -> void:
 	_add_button("Caldero", func() -> void: run.debug_cauldron())
 	_add_button("Santuario", func() -> void: run.debug_shrine())
 	_add_button("Imán", func() -> void: run.debug_magnet())
+	_add_button("Jefe", func() -> void: run.debug_boss())
 	_add_button("+100 plata", func() -> void:
 		Progress.silver += 100
 		Progress.save_progress())

@@ -460,6 +460,7 @@ func _update_hud(header: Dictionary) -> void:
 	_hud.set_buffs(header.buffs)
 	if header.difficulty > 0.0:
 		_hud.set_difficulty(header.difficulty)
+	_hud.set_boss(header.boss[0] if not header.boss.is_empty() else "", header.boss[1] if not header.boss.is_empty() else -1.0)
 	if header.weapons != _shown.get("weapons"):
 		_shown.weapons = header.weapons
 		for weapon in _hud_weapons:

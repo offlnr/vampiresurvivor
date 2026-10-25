@@ -25,6 +25,9 @@ const CAULDRON_ICON := preload("res://art/placeholder/cauldron.svg")
 
 var _shown_buffs := {}
 var _difficulty_label: Label
+var _boss_box: VBoxContainer
+var _boss_label: Label
+var _boss_bar: ProgressBar
 
 
 func _ready() -> void:
@@ -42,6 +45,39 @@ func _ready() -> void:
 
 func show_horde_warning(title: String) -> void:
 	_show_banner("¡Se acerca una horda!\n%s" % title, Palette.RED, 2.8)
+
+
+## The boss's name and health bar under the timer; a negative `fraction` hides it.
+func set_boss(title: String, fraction: float) -> void:
+	if _boss_box == null:
+		if fraction < 0.0:
+			return
+		_boss_box = VBoxContainer.new()
+		_boss_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_boss_box.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+		_boss_box.offset_left = -230
+		_boss_box.offset_right = 230
+		_boss_box.offset_top = 84
+		_boss_box.add_theme_constant_override("separation", 2)
+		add_child(_boss_box)
+		_boss_label = Label.new()
+		_boss_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_boss_label.add_theme_font_size_override("font_size", 22)
+		_boss_label.add_theme_color_override("font_color", Palette.RED)
+		_boss_label.add_theme_font_override("font", Palette.FONT_BOLD)
+		_boss_box.add_child(_boss_label)
+		_boss_bar = ProgressBar.new()
+		_boss_bar.custom_minimum_size = Vector2(0, 16)
+		_boss_bar.show_percentage = false
+		_boss_bar.max_value = 1.0
+		var styles := Palette.bar(Palette.RED)
+		_boss_bar.add_theme_stylebox_override("background", styles[0])
+		_boss_bar.add_theme_stylebox_override("fill", styles[1])
+		_boss_box.add_child(_boss_bar)
+	_boss_box.visible = fraction >= 0.0
+	if fraction >= 0.0:
+		_boss_label.text = title
+		_boss_bar.value = fraction
 
 
 func show_merchant(rarity: int) -> void:

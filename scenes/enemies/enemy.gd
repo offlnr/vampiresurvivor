@@ -9,6 +9,9 @@ const ELITE_HEALTH := 12.0
 const ELITE_DAMAGE := 2.0
 const ELITE_SPEED := 0.85
 const ELITE_XP := 10
+## Bosses: much bigger than elites; their health comes from their own data.
+const BOSS_SCALE := 2.6
+const BOSS_SPEED := 0.85
 
 var data: EnemyData
 var health := 1.0
@@ -20,6 +23,13 @@ var xp_value := 1
 var knockback := Vector2.ZERO
 var alive := false
 var is_elite := false
+## Bosses are also elites (golden outline, they shove the small fry, they show on the minimap).
+var is_boss := false
+## Boss attack state: next attack in `data.boss_attacks`, and the slam being charged.
+var boss_attack := 0
+var slam_left := 0.0
+var slam_time := 1.0
+var slam_radius := 0.0
 ## Horde enemies don't count towards the normal wave limit.
 var is_horde := false
 ## Swarm enemies fly in a straight line instead of chasing, until `life_left` runs out.
@@ -40,27 +50,41 @@ var _time := 0.0
 var _base_scale := 1.0
 var _height := 56.0
 var _animation_speed := 1.0
+var _telegraph: Telegraph
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var outline: AnimatedSprite2D = $Outline
 @onready var shadow: Sprite2D = $Shadow
 
 
-func setup(enemy_data: EnemyData, health_multiplier: float, elite := false, speed_multiplier := 1.0, damage_scale := 1.0) -> void:
+func _ready() -> void:
+	# The slam warning lies on the ground, under the characters standing in it.
+	_telegraph = Telegraph.new()
+	_telegraph.z_index = -1
+	add_child(_telegraph)
+
+
+func setup(enemy_data: EnemyData, health_multiplier: float, elite := false, speed_multiplier := 1.0, damage_scale := 1.0,
+		boss := false) -> void:
 	data = enemy_data
-	is_elite = elite
+	is_boss = boss
+	is_elite = elite or boss
+	elite = is_elite
 	is_horde = false
 	fixed_velocity = Vector2.ZERO
 	life_left = 0.0
-	var size := ELITE_SCALE if elite else 1.0
-	max_health = enemy_data.max_health * health_multiplier * (ELITE_HEALTH if elite else 1.0)
+	boss_attack = 0
+	slam_left = 0.0
+	var size := BOSS_SCALE if boss else (ELITE_SCALE if elite else 1.0)
+	max_health = enemy_data.max_health * health_multiplier * (ELITE_HEALTH if elite and not boss else 1.0)
 	health = max_health
 	radius = enemy_data.radius * size
-	speed = enemy_data.speed * speed_multiplier * randf_range(0.9, 1.1) * (ELITE_SPEED if elite else 1.0)
+	var speed_factor := BOSS_SPEED if boss else (ELITE_SPEED if elite else 1.0)
+	speed = enemy_data.speed * speed_multiplier * randf_range(0.9, 1.1) * speed_factor
 	damage_multiplier = damage_scale
-	contact_damage = enemy_data.contact_damage * damage_scale * (ELITE_DAMAGE if elite else 1.0)
+	contact_damage = enemy_data.contact_damage * damage_scale * (ELITE_DAMAGE if elite and not boss else 1.0)
 	attack_left = enemy_data.attack_cooldown * randf_range(0.5, 1.0)
-	xp_value = enemy_data.xp_value * (ELITE_XP if elite else 1)
+	xp_value = enemy_data.xp_value * (ELITE_XP if elite and not boss else 1)
 	knockback = Vector2.ZERO
 	alive = true
 	spawn_left = SPAWN_TIME
@@ -88,6 +112,33 @@ func setup(enemy_data: EnemyData, health_multiplier: float, elite := false, spee
 	shadow.scale = Vector2.ONE * (radius * 2.6 / 64.0)
 	_apply_spawn_visual()
 	queue_redraw()
+	_telegraph.queue_redraw()
+
+
+## Starts charging a slam: a circle on the ground warns where it will hit.
+func start_slam(seconds: float, reach: float) -> void:
+	slam_time = seconds
+	slam_left = seconds
+	slam_radius = reach
+
+
+## Counts the slam down; true when it lands.
+func charge_slam(delta: float) -> bool:
+	slam_left = maxf(slam_left - delta, 0.0)
+	_telegraph.queue_redraw()
+	return slam_left <= 0.0
+
+
+## What the slam warning draws (see Telegraph and NetDraw).
+func slam_ops() -> Array:
+	if slam_left <= 0.0 or not alive:
+		return []
+	var progress := 1.0 - slam_left / slam_time
+	return [
+		[NetDraw.CIRCLE, Vector2.ZERO, slam_radius, Color(Palette.RED, 0.12 + 0.18 * progress)],
+		[NetDraw.CIRCLE, Vector2.ZERO, slam_radius * progress, Color(Palette.RED, 0.3)],
+		[NetDraw.ARC, Vector2.ZERO, slam_radius, 0.0, TAU, 56, Color(Palette.RED, 0.85), 4.0],
+	]
 
 
 func is_spawning() -> bool:
@@ -179,9 +230,9 @@ func _draw() -> void:
 	NetDraw.paint(self, draw_ops())
 
 
-## Elites show a health bar over their head (see NetDraw).
+## Elites show a health bar over their head (see NetDraw). Bosses have theirs in the HUD.
 func draw_ops() -> Array:
-	if not is_elite or not alive:
+	if not is_elite or is_boss or not alive:
 		return []
 	var width := 70.0
 	var origin := Vector2(-width / 2.0, -_height * 0.6 - 14.0)
@@ -189,3 +240,12 @@ func draw_ops() -> Array:
 		[NetDraw.RECT, Rect2(origin - Vector2(2, 2), Vector2(width + 4, 10)), Palette.INK],
 		[NetDraw.RECT, Rect2(origin, Vector2(width * maxf(health, 0.0) / max_health, 6)), Palette.GOLD],
 	]
+
+
+## The boss's slam warning on the ground.
+class Telegraph extends Node2D:
+	func _draw() -> void:
+		NetDraw.paint(self, draw_ops())
+
+	func draw_ops() -> Array:
+		return (get_parent() as Enemy).slam_ops()

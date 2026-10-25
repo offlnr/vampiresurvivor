@@ -156,6 +156,7 @@ var _run_recorded := false
 var revive_used := false
 var revive_offer: ReviveOffer
 var cauldrons_brewed := 0
+var bosses_defeated := 0
 ## Extra difficulty from the cursed scroll, on top of cauldrons.
 var curse_difficulty := 0.0
 var _xp_fraction := 0.0
@@ -274,6 +275,9 @@ func _ready() -> void:
 	level_up_menu.chosen.connect(func(offer: Dictionary) -> void: _on_upgrade_chosen(local_seat, offer))
 	enemy_manager.horde_warning.connect(hud.show_horde_warning)
 	enemy_manager.horde_started.connect(hud.show_horde_started)
+	enemy_manager.boss_warning.connect(_on_boss_warning)
+	enemy_manager.boss_started.connect(_on_boss_started)
+	enemy_manager.boss_defeated.connect(_on_boss_defeated)
 	Events.enemy_killed.connect(_on_enemy_killed)
 	hud.pause_pressed.connect(open_pause)
 	level_up_menu.stats_provider = func() -> Array[Dictionary]: return stats_sections(local_seat)
@@ -316,6 +320,8 @@ func _process(delta: float) -> void:
 	map_chests.run_time = elapsed
 	hud.set_time(elapsed)
 	hud.set_buffs(player.buffs)
+	var boss := enemy_manager.boss
+	hud.set_boss(boss.data.display_name if boss != null else "", maxf(boss.health, 0.0) / boss.max_health if boss != null else -1.0)
 	for seat in seats:
 		seat.best_no_hit = maxf(seat.best_no_hit, seat.player.time_since_hit())
 
@@ -677,6 +683,10 @@ func debug_magnet() -> void:
 	_on_magnet_used(player.global_position, player)
 
 
+func debug_boss() -> void:
+	enemy_manager.start_boss()
+
+
 func debug_power_up() -> void:
 	pickups.spawn_power_up(player.global_position + Vector2(90, 0), PowerUps.roll())
 
@@ -970,6 +980,33 @@ func _on_map_chest_touched(chest: Node2D, toucher: Player = null) -> void:
 	_open_shop(seat, "Cofre: elige un objeto", Palette.GOLD, true)
 
 
+func _on_boss_warning(title: String) -> void:
+	_announce("¡Se acerca un jefe!\n%s" % title, Palette.RED, 3.0)
+
+
+func _on_boss_started(title: String) -> void:
+	_announce(title + "!", Palette.ORANGE, 1.6)
+
+
+## A boss beaten: every player gets an epic choice of their own.
+func _on_boss_defeated(_data: EnemyData, pos: Vector2) -> void:
+	if finished:
+		return
+	bosses_defeated += 1
+	effects.shockwave(pos, Palette.GOLD, 6.0)
+	Audio.play(&"powerup", 0.0)
+	for seat in seats:
+		seat.pending_choices.append({kind = &"boss", rarity = Rarity.Tier.EPIC})
+		_show_next_choice(seat)
+
+
+## A banner on every player's screen.
+func _announce(text: String, color: Color, hold: float) -> void:
+	hud.show_message(text, color, hold)
+	if net_host != null:
+		net_host.queue_event(&"show_message", [text, color, hold])
+
+
 ## A charged power shrine: whoever charged it picks an upgrade for their character.
 func _on_shrine_charged(pos: Vector2, activator: Player) -> void:
 	if finished:
@@ -1133,9 +1170,10 @@ func _show_next_choice(seat: Seat) -> void:
 	if seat.pending_choices.is_empty() or seat.menu != &"":
 		return
 	var choice: Dictionary = seat.pending_choices[0]
-	var heading: String = {&"level": "¡Subiste de nivel!", &"chest": "¡Cofre maldito!", &"shrine": "Santuario de poder"}[choice.kind]
+	var heading: String = {&"level": "¡Subiste de nivel!", &"chest": "¡Cofre maldito!", &"shrine": "Santuario de poder",
+		&"boss": "¡Jefe derrotado!"}[choice.kind]
 	effects.level_ring(seat.player.global_position)
-	Audio.play(&"chest" if choice.kind == &"chest" else &"level_up", 0.0)
+	Audio.play(&"chest" if choice.kind == &"chest" or choice.kind == &"boss" else &"level_up", 0.0)
 	seat.offers = build_offers(choice.rarity, seat, choice.kind)
 	seat.menu = &"level_up"
 	if seat.remote:

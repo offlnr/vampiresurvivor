@@ -141,7 +141,9 @@ func _header(center: Vector2) -> Dictionary:
 	var alive := is_instance_valid(guest)
 	# The guest moves its own character at once and corrects it with these (see NetGuest).
 	var moving := alive and not guest.is_dead and not get_tree().paused
+	var boss: Enemy = run.enemy_manager.boss
 	return {
+		boss = [boss.data.display_name, maxf(boss.health, 0.0) / boss.max_health] if boss != null else [],
 		self_unit = _unit_ids.get(guest.get_instance_id(), 0) if alive else 0, input = _guest_input,
 		speed = guest.move_speed() if alive else 0.0, moving = moving,
 		resources = _new_resources, seed = _decorations.world_seed, pos = center,
