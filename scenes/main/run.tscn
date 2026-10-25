@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scenes/main/run.gd" id="1_run"]
 [ext_resource type="Texture2D" path="res://art/placeholder/ground.svg" id="2_ground"]
@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="11_pause"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="12_game_over"]
 [ext_resource type="PackedScene" path="res://scenes/ui/debug_overlay.tscn" id="13_debug"]
+[ext_resource type="Script" path="res://scenes/pickups/shrines.gd" id="24_shrines"]
 
 [node name="Run" type="Node2D"]
 script = ExtResource("1_run")
@@ -66,6 +67,10 @@ script = ExtResource("21_chests")
 [node name="Cauldrons" type="Node2D" parent="World/Actors"]
 y_sort_enabled = true
 script = ExtResource("22_cauldrons")
+
+[node name="Shrines" type="Node2D" parent="World/Actors"]
+y_sort_enabled = true
+script = ExtResource("24_shrines")
 
 [node name="Projectiles" type="Node2D" parent="World"]
 

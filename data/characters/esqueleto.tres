@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://art/placeholder/characters/esqueleto/frames.tres" id="2_frames"]
+[ext_resource type="Resource" path="res://data/weapons/hueso.tres" id="3_weapon"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"skeleton"
+display_name = "Esqueleto"
+description = "Duro como una lápida y siempre con un hueso a mano."
+frames = ExtResource("2_frames")
+starting_weapon = ExtResource("3_weapon")
+bonus_stats = Array[int]([7])
+bonus_values = PackedFloat32Array(0.1)
+bonus_text = "+10 % de armadura."

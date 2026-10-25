@@ -33,8 +33,6 @@ const COOP_ENEMY_COUNT := 1.35
 const COOP_XP_NEEDED := 1.5
 const PLAYER_SCENE := preload("res://scenes/player/player.tscn")
 const MENU_SCENE := "res://scenes/main/main_menu.tscn"
-## The witch starts with her magic orb; the pumpkin is one of the weapons offered during the run.
-const STARTING_WEAPON: WeaponData = preload("res://data/weapons/orbe.tres")
 const WEAPONS: Array[WeaponData] = [
 	preload("res://data/weapons/orbe.tres"),
 	preload("res://data/weapons/calabaza.tres"),
@@ -75,6 +73,8 @@ const SCROLLS: Array[UpgradeData] = [
 ]
 ## Stats the chaos scroll can improve: every scroll except counts and the ones that change the run itself.
 const CHAOS_EXCLUDED: Array[UpgradeData.Stat] = [UpgradeData.Stat.AMOUNT, UpgradeData.Stat.CURSE, UpgradeData.Stat.CHAOS]
+## Stats a power shrine never offers: the ones chaos leaves out, and silver (it only counts after the run).
+const SHRINE_EXCLUDED: Array[UpgradeData.Stat] = [UpgradeData.Stat.AMOUNT, UpgradeData.Stat.CURSE, UpgradeData.Stat.CHAOS, UpgradeData.Stat.SILVER]
 const ITEMS: Array[ItemData] = [
 	preload("res://data/items/rotten_pumpkin.tres"),
 	preload("res://data/items/skull_candy.tres"),
@@ -208,6 +208,7 @@ var skips_left: int:
 @onready var shop_menu: Control = $UI/ShopMenu
 @onready var map_chests: MapChests = $World/Actors/MapChests
 @onready var cauldrons: Cauldrons = $World/Actors/Cauldrons
+@onready var shrines: Shrines = $World/Actors/Shrines
 @onready var decorations: Decorations = $World/Actors/Decorations
 
 
@@ -238,6 +239,8 @@ func _ready() -> void:
 	map_chests.player = player
 	map_chests.price = chest_price()
 	cauldrons.player = player
+	shrines.player = player
+	shrines.decorations = decorations
 	decorations.player = player
 	player.decorations = decorations
 	enemy_manager.decorations = decorations
@@ -263,6 +266,8 @@ func _ready() -> void:
 	shop_menu.banish_requested.connect(func(index: int) -> void: _on_shop_banish(local_seat, index))
 	map_chests.chest_touched.connect(_on_map_chest_touched)
 	cauldrons.brewed.connect(_on_cauldron_brewed)
+	shrines.shrine_charged.connect(_on_shrine_charged)
+	shrines.magnet_used.connect(_on_magnet_used)
 	level_up_menu.reroll_requested.connect(func(index: int) -> void: _on_card_reroll(local_seat, index))
 	level_up_menu.banish_requested.connect(func(index: int) -> void: _on_card_banish(local_seat, index))
 	level_up_menu.skip_requested.connect(func() -> void: _on_card_skip(local_seat))
@@ -290,10 +295,11 @@ func _ready() -> void:
 	merchants.players = players
 	map_chests.players = players
 	cauldrons.players = players
+	shrines.players = players
+	_start_character(local_seat, Characters.by_id(Progress.character))
 	if Net.is_host():
 		_setup_host()
 
-	add_weapon(STARTING_WEAPON)
 	hud.set_health(player.health, player.max_health)
 	hud.set_xp(xp, xp_to_next_level(), level)
 	hud.set_kills(kills)
@@ -348,14 +354,24 @@ func _seat_of(character: Player) -> Seat:
 	return local_seat
 
 
+## Gives the seat's player this character: its look, its starting weapon (offered for upgrades
+## even if that weapon is still locked) and its passive bonuses.
+func _start_character(seat: Seat, character: CharacterData) -> void:
+	seat.character = character
+	seat.player.set_frames(character.frames)
+	if not seat.weapon_pool.has(character.starting_weapon):
+		seat.weapon_pool.append(character.starting_weapon)
+	add_weapon(character.starting_weapon, seat)
+	for i in character.bonus_stats.size():
+		_apply_stat(character.bonus_stats[i], character.bonus_values[i], seat)
+
+
 ## Online co-op host: the guest's character joins the run next to the player, with its own seat.
 func _setup_host() -> void:
 	guest_player = PLAYER_SCENE.instantiate()
 	guest_player.name = "Guest"
 	guest_player.remote_input = true
 	guest_player.get_node("Camera").enabled = false
-	# A bluish witch, so each player tells their character apart.
-	guest_player.get_node("Visual/Sprite").modulate = Color(0.7, 0.88, 1.2)
 	guest_player.enemies = enemy_manager
 	guest_player.decorations = decorations
 	player.get_parent().add_child(guest_player)
@@ -398,7 +414,11 @@ func _setup_host() -> void:
 	_waiting_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_waiting_label.visible = false
 	$UI.add_child(_waiting_label)
-	add_weapon(STARTING_WEAPON, guest_seat)
+	var guest_character := Characters.by_id(Net.guest_character)
+	_start_character(guest_seat, guest_character)
+	if guest_character == local_seat.character:
+		# Same character for both: the guest's is bluish, so each player tells theirs apart.
+		guest_player.get_node("Visual/Sprite").modulate = Color(0.7, 0.88, 1.2)
 
 
 ## Online co-op guest: nothing is simulated here, NetGuest draws what the host sends.
@@ -496,10 +516,10 @@ func open_pause() -> void:
 	pause_menu.open()
 
 
-func build_offers(minimum_rarity := Rarity.Tier.COMMON, seat: Seat = null) -> Array[Dictionary]:
+func build_offers(minimum_rarity := Rarity.Tier.COMMON, seat: Seat = null, kind := &"level") -> Array[Dictionary]:
 	if seat == null:
 		seat = local_seat
-	var pool := _offer_candidates(seat)
+	var pool := _shrine_candidates() if kind == &"shrine" else _offer_candidates(seat)
 	pool.shuffle()
 	var offers: Array[Dictionary] = []
 	for candidate in pool.slice(0, 3):
@@ -533,13 +553,34 @@ func _offer_candidates(seat: Seat) -> Array[Dictionary]:
 	return pool
 
 
+## What a power shrine can offer: an upgrade of the character's own stats (as much as a scroll of
+## that rarity gives), which doesn't take a scroll slot. Not limited by unlocks, as in Megabonk.
+func _shrine_candidates() -> Array[Dictionary]:
+	var pool: Array[Dictionary] = []
+	for scroll in SCROLLS:
+		if not SHRINE_EXCLUDED.has(scroll.stat):
+			pool.append({kind = &"stat", id = "stat:%s" % scroll.id, upgrade = scroll, title = _stat_title(scroll),
+				icon = scroll.icon, tag = "Mejora del personaje"})
+	return pool
+
+
+## "Pergamino de velocidad" -> "Velocidad", "Pergamino del imán" -> "Imán".
+static func _stat_title(scroll: UpgradeData) -> String:
+	var title := scroll.display_name
+	for prefix: String in ["Pergamino del ", "Pergamino de ", "Pergamino "]:
+		if title.begins_with(prefix):
+			title = title.substr(prefix.length())
+			break
+	return title.left(1).to_upper() + title.substr(1)
+
+
 ## Rolls the rarity (new weapons are always common) and the weapon upgrade, and writes the text.
 func _finish_offer(candidate: Dictionary, minimum_rarity: int, seat: Seat) -> Dictionary:
 	var offer := candidate.duplicate()
 	offer.rarity = Rarity.Tier.COMMON if offer.kind == &"new_weapon" else Rarity.roll(seat.player.luck, minimum_rarity)
 	if offer.kind == &"weapon_level":
 		offer.upgrade = seat.owned_weapon(offer.weapon).roll_upgrade(offer.rarity)
-	elif offer.kind == &"scroll":
+	elif offer.kind == &"scroll" or offer.kind == &"stat":
 		var scroll: UpgradeData = offer.upgrade
 		offer.amount = scroll.roll_amount(offer.rarity)
 	offer.description = _describe(offer)
@@ -556,19 +597,24 @@ func _fallback_offers(minimum_rarity: int) -> Array[Dictionary]:
 
 
 ## A new offer for card `index` that differs from every card on screen. Empty if there is none.
-func replacement_offer(offers: Array[Dictionary], index: int, minimum_rarity: int, seat: Seat = null) -> Dictionary:
+func replacement_offer(offers: Array[Dictionary], index: int, minimum_rarity: int, seat: Seat = null, kind := &"level") -> Dictionary:
 	if seat == null:
 		seat = local_seat
 	var taken := {}
 	for offer in offers:
-		taken[offer.get("key", "")] = true
+		taken[_offer_id(offer)] = true
 	var pool: Array[Dictionary] = []
-	for candidate in _offer_candidates(seat):
-		if not taken.has(candidate.key):
+	for candidate in _shrine_candidates() if kind == &"shrine" else _offer_candidates(seat):
+		if not taken.has(_offer_id(candidate)):
 			pool.append(candidate)
 	if pool.is_empty():
 		return {}
 	return _finish_offer(pool.pick_random(), minimum_rarity, seat)
+
+
+## What tells two offers apart: the banish key, or the stat of a shrine upgrade.
+static func _offer_id(offer: Dictionary) -> String:
+	return offer.get("key", offer.get("id", ""))
 
 
 func apply_offer(offer: Dictionary, seat: Seat = null) -> void:
@@ -586,6 +632,9 @@ func apply_offer(offer: Dictionary, seat: Seat = null) -> void:
 			seat.scroll_levels[scroll] = seat.scroll_levels.get(scroll, 0) + 1
 			_apply_scroll(scroll, offer.get("amount", scroll.roll_amount(rarity)), seat)
 			_refresh_inventory()
+		&"stat":
+			var stat_scroll: UpgradeData = offer.upgrade
+			_apply_stat(stat_scroll.stat, offer.amount, seat)
 		&"heal":
 			seat.player.heal(seat.player.max_health * HEAL_FALLBACK)
 		&"gold":
@@ -618,6 +667,14 @@ func debug_gold(amount: int) -> void:
 
 func debug_cauldron() -> void:
 	_on_cauldron_brewed(player.global_position)
+
+
+func debug_shrine() -> void:
+	_on_shrine_charged(player.global_position, player)
+
+
+func debug_magnet() -> void:
+	_on_magnet_used(player.global_position, player)
 
 
 func debug_power_up() -> void:
@@ -654,10 +711,15 @@ func apply_power_up(kind: StringName) -> void:
 
 
 func _apply_scroll(scroll: UpgradeData, amount: float, seat: Seat = null) -> void:
+	_apply_stat(scroll.stat, amount, seat)
+
+
+## Raises one of the character's stats, from a scroll, a power shrine or the character's passive.
+func _apply_stat(stat: int, amount: float, seat: Seat = null) -> void:
 	if seat == null:
 		seat = local_seat
 	var p := seat.player
-	match scroll.stat:
+	match stat:
 		UpgradeData.Stat.MAX_HEALTH:
 			p.increase_max_health(Player.BASE_MAX_HEALTH * amount)
 		UpgradeData.Stat.MOVE_SPEED:
@@ -795,7 +857,7 @@ static func _pct(fraction: float) -> String:
 
 func _describe(offer: Dictionary) -> String:
 	var rarity: int = offer.rarity
-	if offer.kind == &"scroll":
+	if offer.kind == &"scroll" or offer.kind == &"stat":
 		var upgrade: UpgradeData = offer.upgrade
 		return upgrade.describe(offer.get("amount", upgrade.roll_amount(rarity)))
 	if offer.kind == &"weapon_level":
@@ -834,7 +896,7 @@ func _on_xp_collected(amount: int, collector: Player = null) -> void:
 		level += 1
 		_revive_fallen()
 		for each in seats:
-			each.pending_choices.append(Rarity.Tier.COMMON)
+			each.pending_choices.append({kind = &"level", rarity = Rarity.Tier.COMMON})
 			_chaos_tick(each)
 		Events.level_up.emit(level)
 	hud.set_xp(xp, xp_to_next_level(), level)
@@ -906,6 +968,29 @@ func _on_map_chest_touched(chest: Node2D, toucher: Player = null) -> void:
 			seat.shop_items.append(item)
 	_refresh_shop_prices(seat)
 	_open_shop(seat, "Cofre: elige un objeto", Palette.GOLD, true)
+
+
+## A charged power shrine: whoever charged it picks an upgrade for their character.
+func _on_shrine_charged(pos: Vector2, activator: Player) -> void:
+	if finished:
+		return
+	var seat := _seat_of(activator)
+	effects.shockwave(pos, Shrines.POWER_COLOR, 2.5)
+	seat.pending_choices.append({kind = &"shrine", rarity = Rarity.Tier.COMMON})
+	_show_next_choice(seat)
+
+
+## A magnet totem: every soul and coin on the map flies to the players.
+func _on_magnet_used(pos: Vector2, _activator: Player) -> void:
+	if finished:
+		return
+	pickups.attract_all()
+	effects.shockwave(pos, Shrines.MAGNET_COLOR, 4.0)
+	Audio.play(&"powerup", 0.0)
+	var text := "¡Imán!\nTodas las almas vuelan hacia vosotros" if guest_seat != null else "¡Imán!\nTodas las almas vuelan hacia ti"
+	hud.show_message(text, Shrines.MAGNET_COLOR, 2.0)
+	if net_host != null:
+		net_host.queue_event(&"show_message", [text, Shrines.MAGNET_COLOR, 2.0])
 
 
 ## A brewed cauldron: the rest of the run is harder, and pays everyone more experience and gold.
@@ -1040,19 +1125,18 @@ func _on_chest_opened(collector: Player = null) -> void:
 	var seat := _seat_of(collector) if collector != null else local_seat
 	seat.chests_total += 1
 	seat.inventory.on_chest_opened()
-	seat.pending_choices.append(Rarity.Tier.RARE)
+	seat.pending_choices.append({kind = &"chest", rarity = Rarity.Tier.RARE})
 	_show_next_choice(seat)
 
 
 func _show_next_choice(seat: Seat) -> void:
 	if seat.pending_choices.is_empty() or seat.menu != &"":
 		return
-	var minimum: int = seat.pending_choices[0]
-	var from_chest := minimum >= Rarity.Tier.RARE
-	var heading := "¡Cofre maldito!" if from_chest else "¡Subiste de nivel!"
+	var choice: Dictionary = seat.pending_choices[0]
+	var heading: String = {&"level": "¡Subiste de nivel!", &"chest": "¡Cofre maldito!", &"shrine": "Santuario de poder"}[choice.kind]
 	effects.level_ring(seat.player.global_position)
-	Audio.play(&"chest" if from_chest else &"level_up", 0.0)
-	seat.offers = build_offers(minimum, seat)
+	Audio.play(&"chest" if choice.kind == &"chest" else &"level_up", 0.0)
+	seat.offers = build_offers(choice.rarity, seat, choice.kind)
 	seat.menu = &"level_up"
 	if seat.remote:
 		get_tree().paused = true
@@ -1116,7 +1200,8 @@ func _update_waiting() -> void:
 func _on_card_reroll(seat: Seat, index: int) -> void:
 	if seat.menu != &"level_up" or seat.rerolls_left <= 0 or index < 0 or index >= seat.offers.size():
 		return
-	var replacement := replacement_offer(seat.offers, index, seat.pending_choices[0], seat)
+	var choice: Dictionary = seat.pending_choices[0]
+	var replacement := replacement_offer(seat.offers, index, choice.rarity, seat, choice.kind)
 	if replacement.is_empty():
 		return
 	seat.rerolls_left -= 1
@@ -1132,9 +1217,10 @@ func _on_card_banish(seat: Seat, index: int) -> void:
 		return
 	seat.banished[offer.key] = true
 	seat.banishes_left -= 1
-	var replacement := replacement_offer(seat.offers, index, seat.pending_choices[0], seat)
+	var choice: Dictionary = seat.pending_choices[0]
+	var replacement := replacement_offer(seat.offers, index, choice.rarity, seat, choice.kind)
 	if replacement.is_empty():
-		replacement = _fallback_offers(seat.pending_choices[0])[0]
+		replacement = _fallback_offers(choice.rarity)[0]
 	seat.offers[index] = replacement
 	_replace_card(seat, index)
 

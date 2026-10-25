@@ -93,6 +93,14 @@ func _ready() -> void:
 	_update_zoom()
 
 
+## The character's look (see CharacterData), scaled to the same height as every other.
+func set_frames(frames: SpriteFrames) -> void:
+	sprite.sprite_frames = frames
+	var frame := frames.get_frame_texture(&"idle", 0)
+	sprite.scale = Vector2.ONE * (VISUAL_HEIGHT / frame.get_height())
+	sprite.play(&"idle")
+
+
 func move_speed() -> float:
 	var bonus := inventory.move_speed_bonus() if inventory != null else 0.0
 	var broom := 1.4 if has_buff(&"broom") else 1.0

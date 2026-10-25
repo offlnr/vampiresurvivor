@@ -16,6 +16,8 @@ var _start_button: Button
 var _back_button: Button
 var _status: Label
 var _code_label: Label
+var _character_button: Button
+var _character_select: CharacterSelect
 
 
 func _init() -> void:
@@ -42,6 +44,9 @@ func _init() -> void:
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(hint)
 
+	# Each player picks their own character here; the guest's choice is sent to the host.
+	_character_button = _button("", _on_character)
+	box.add_child(_character_button)
 	_host_button = _button("Crear sala", _on_host)
 	box.add_child(_host_button)
 	_code_label = _label("", 54, Palette.GOLD)
@@ -84,6 +89,10 @@ func _init() -> void:
 
 	_back_button = _button("Volver", close)
 	box.add_child(_back_button)
+	_character_select = CharacterSelect.new()
+	_character_select.chosen.connect(_on_character_chosen)
+	_character_select.closed.connect(_character_button.grab_focus)
+	add_child(_character_select)
 
 	Net.room_created.connect(_on_room_created)
 	Net.joined.connect(_on_joined)
@@ -96,6 +105,7 @@ func _init() -> void:
 
 func open() -> void:
 	_server_edit.text = Net.server_url
+	_update_character_button()
 	_reset("")
 	visible = true
 	_host_button.grab_focus()
@@ -115,6 +125,22 @@ func _reset(status: String) -> void:
 	_start_button.visible = false
 	_host_button.disabled = false
 	_join_button.disabled = false
+
+
+func _on_character() -> void:
+	Audio.play(&"click", 0.0)
+	_character_select.open()
+
+
+func _on_character_chosen(_character: CharacterData) -> void:
+	_update_character_button()
+	_character_button.grab_focus()
+	if Net.is_guest():
+		Net.send([Net.MSG_CHARACTER, Progress.character])
+
+
+func _update_character_button() -> void:
+	_character_button.text = "Personaje: %s" % Characters.by_id(Progress.character).display_name
 
 
 func _on_host() -> void:

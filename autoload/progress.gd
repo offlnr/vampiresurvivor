@@ -20,6 +20,8 @@ var unlocked := {}
 var stats := {}
 ## Date ("2026-10-15") of the last daily gift claimed.
 var last_gift := ""
+## Id of the last character chosen (see Characters), so the selection screen starts on it.
+var character := "witch"
 
 
 func _ready() -> void:
@@ -93,6 +95,11 @@ func record_run(run: Dictionary) -> Dictionary:
 	return {silver = earned, completed = completed}
 
 
+func set_character(id: String) -> void:
+	character = id
+	save_progress()
+
+
 func add_silver(amount: int) -> void:
 	silver += amount
 	save_progress()
@@ -111,6 +118,7 @@ func claim_daily_gift(amount: int) -> void:
 func reset() -> void:
 	silver = 0
 	last_gift = ""
+	character = "witch"
 	unlocked.clear()
 	stats.clear()
 
@@ -125,6 +133,7 @@ func load_progress() -> void:
 		unlocked[key] = true
 	stats = cfg.get_value("progress", "stats", {})
 	last_gift = cfg.get_value("progress", "last_gift", "")
+	character = cfg.get_value("progress", "character", "witch")
 
 
 func save_progress() -> void:
@@ -133,6 +142,7 @@ func save_progress() -> void:
 	cfg.set_value("progress", "unlocked", PackedStringArray(unlocked.keys()))
 	cfg.set_value("progress", "stats", stats)
 	cfg.set_value("progress", "last_gift", last_gift)
+	cfg.set_value("progress", "character", character)
 	cfg.save(path)
 
 

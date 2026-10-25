@@ -1,5 +1,5 @@
 extends Control
-## Round minimap centred on the player: merchant, chests, cauldrons, power-ups and elites. North is up.
+## Round minimap centred on the player: merchant, chests, cauldrons, shrines, magnets, power-ups and elites. North is up.
 
 ## World units from the centre to the edge of the minimap.
 const WORLD_RADIUS := 1600.0
@@ -34,6 +34,10 @@ func _draw() -> void:
 		_mark(center, radius, (pos - origin) * scale, Color("b87333"), 4.5, true)
 	for pos: Vector2 in run.cauldrons.positions():
 		_mark(center, radius, (pos - origin) * scale, Palette.GREEN, 5.0, false)
+	for pos: Vector2 in run.shrines.positions(Shrines.Kind.POWER):
+		_mark(center, radius, (pos - origin) * scale, Shrines.POWER_COLOR, 5.5, false)
+	for pos: Vector2 in run.shrines.positions(Shrines.Kind.MAGNET):
+		_mark(center, radius, (pos - origin) * scale, Shrines.MAGNET_COLOR, 5.5, false)
 	for pos: Vector2 in run.pickups.chest_positions():
 		_mark(center, radius, (pos - origin) * scale, Palette.GOLD, 5.0, true)
 	for enemy in run.enemy_manager.active():

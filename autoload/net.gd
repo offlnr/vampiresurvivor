@@ -32,6 +32,8 @@ const MSG_MENU := 5
 const MSG_ACTION := 6
 ## Guest -> host, on joining: what the guest has unlocked, so its cards and shops offer that.
 const MSG_UNLOCKS := 7
+## Guest -> host, on joining and whenever it changes: the id of the guest's character (see Characters).
+const MSG_CHARACTER := 8
 
 const CONFIG_PATH := "user://net.cfg"
 ## The room server on Render (see server/README.md). For local tests: ws://localhost:8080
@@ -49,6 +51,8 @@ var room_code := ""
 var peer_connected := false
 ## On the host: the unlock keys the guest sent (see Progress.unlocked).
 var guest_unlocked := {}
+## On the host: the id of the guest's character.
+var guest_character := ""
 
 var _socket: WebSocketPeer
 var _open := false
@@ -86,6 +90,7 @@ func set_server_url(url: String) -> void:
 ## Opens a room on the relay; `room_created` brings its code.
 func host_room() -> void:
 	guest_unlocked = {}
+	guest_character = ""
 	_connect({t = "host"})
 
 
@@ -157,6 +162,8 @@ func _process(delta: float) -> void:
 							guest_unlocked = {}
 							for key: String in message[1]:
 								guest_unlocked[key] = true
+						elif message[0] == MSG_CHARACTER:
+							guest_character = str(message[1])
 						message_received.emit(message)
 		WebSocketPeer.STATE_CLOSED:
 			var was_open := _open
@@ -181,6 +188,7 @@ func _on_control(text: String) -> void:
 			room_code = message.code
 			peer_connected = true
 			send([MSG_UNLOCKS, Progress.unlocked.keys()])
+			send([MSG_CHARACTER, Progress.character])
 			joined.emit(room_code)
 		"peer_joined":
 			peer_connected = true

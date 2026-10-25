@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://art/placeholder/characters/vampiro/frames.tres" id="2_frames"]
+[ext_resource type="Resource" path="res://data/weapons/murcielagos.tres" id="3_weapon"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"vampire"
+display_name = "Vampiro"
+description = "Sus murciélagos nunca le dejan solo."
+frames = ExtResource("2_frames")
+starting_weapon = ExtResource("3_weapon")
+bonus_stats = Array[int]([6])
+bonus_values = PackedFloat32Array(0.02)
+bonus_text = "+2 % de robo de vida."

@@ -1,0 +1,39 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://art/placeholder/characters/vampiro/idle_0.svg" id="1"]
+[ext_resource type="Texture2D" path="res://art/placeholder/characters/vampiro/idle_1.svg" id="2"]
+[ext_resource type="Texture2D" path="res://art/placeholder/characters/vampiro/walk_0.svg" id="3"]
+[ext_resource type="Texture2D" path="res://art/placeholder/characters/vampiro/walk_1.svg" id="4"]
+[ext_resource type="Texture2D" path="res://art/placeholder/characters/vampiro/walk_2.svg" id="5"]
+[ext_resource type="Texture2D" path="res://art/placeholder/characters/vampiro/walk_3.svg" id="6"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 2.5
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 9.0
+}]

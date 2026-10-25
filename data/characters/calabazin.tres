@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://art/placeholder/characters/calabazin/frames.tres" id="2_frames"]
+[ext_resource type="Resource" path="res://data/weapons/calabaza.tres" id="3_weapon"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"pumpkin"
+display_name = "Calabazín"
+description = "El espantapájaros del huerto maldito."
+frames = ExtResource("2_frames")
+starting_weapon = ExtResource("3_weapon")
+bonus_stats = Array[int]([0])
+bonus_values = PackedFloat32Array(0.25)
+bonus_text = "+25 % de vida máxima."

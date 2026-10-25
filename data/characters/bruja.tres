@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://art/placeholder/player/player_frames.tres" id="2_frames"]
+[ext_resource type="Resource" path="res://data/weapons/orbe.tres" id="3_weapon"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"witch"
+display_name = "Bruja"
+description = "Domina la magia arcana y aprende rápido."
+frames = ExtResource("2_frames")
+starting_weapon = ExtResource("3_weapon")
+bonus_stats = Array[int]([9])
+bonus_values = PackedFloat32Array(0.1)
+bonus_text = "+10 % de experiencia."

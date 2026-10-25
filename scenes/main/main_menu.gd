@@ -14,6 +14,7 @@ var _unlocks_menu: UnlocksMenu
 var _online_button: Button
 var _online_menu: MultiplayerMenu
 var _gift_button: Button
+var _character_select: CharacterSelect
 var _time := 0.0
 
 @onready var title: Label = $Center/VBox/Title
@@ -66,6 +67,12 @@ func _ready() -> void:
 	_online_menu = MultiplayerMenu.new()
 	_online_menu.closed.connect(_online_button.grab_focus)
 	add_child(_online_menu)
+	# "Jugar" first asks which character to play, each with its own starting weapon.
+	_character_select = CharacterSelect.new()
+	_character_select.chosen.connect(func(_character: CharacterData) -> void:
+		get_tree().change_scene_to_file(RUN_SCENE))
+	_character_select.closed.connect(play_button.grab_focus)
+	add_child(_character_select)
 	# Optional daily gift (rewarded ad), in a corner so it never gets in the way.
 	_gift_button = Button.new()
 	_gift_button.text = "Regalo diario: +%d plata (anuncio)" % DAILY_GIFT_SILVER
@@ -156,7 +163,7 @@ func _fit_title() -> void:
 
 func _on_play() -> void:
 	Audio.play(&"click", 0.0)
-	get_tree().change_scene_to_file(RUN_SCENE)
+	_character_select.open()
 
 
 func _on_online() -> void:

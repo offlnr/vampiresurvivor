@@ -25,6 +25,8 @@ func _ready() -> void:
 	_add_button("Comerciante", func() -> void: run.merchants.spawn(Rarity.roll(run.player.luck)))
 	_add_button("Power-up", func() -> void: run.debug_power_up())
 	_add_button("Caldero", func() -> void: run.debug_cauldron())
+	_add_button("Santuario", func() -> void: run.debug_shrine())
+	_add_button("Imán", func() -> void: run.debug_magnet())
 	_add_button("+100 plata", func() -> void:
 		Progress.silver += 100
 		Progress.save_progress())

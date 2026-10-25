@@ -6,6 +6,8 @@ extends RefCounted
 
 var player: Player
 var inventory: Inventory
+## The character this player chose (look, starting weapon and passive).
+var character: CharacterData
 ## The guest's seat: its menus are shown on the guest's screen (see NetHost and NetGuest).
 var remote := false
 var weapons: Array[Weapon] = []
@@ -31,8 +33,8 @@ var chests_total := 0
 var items_bought := 0
 var best_no_hit := 0.0
 
-## Pending upgrade choices; each entry is the minimum rarity of that choice.
-var pending_choices: Array[int] = []
+## Pending upgrade choices, in order: {kind = &"level" | &"chest" | &"shrine", rarity = minimum rarity}.
+var pending_choices: Array[Dictionary] = []
 ## What this seat's screen shows: &"" (nothing), &"level_up" or &"shop".
 var menu := &""
 ## Level-up cards on screen.
